@@ -1,9 +1,9 @@
 const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
-    GEMINI_MODEL: 'gemini-pro:generateContent',
+    GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743801918/menu.js',
-    TEMPERATURE: 0.7
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743499848/ui.js',
+    TEMPERATURE: 0.8
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
@@ -43,8 +43,9 @@ async function hackMUITextarea(textareaElement, textToInsert) {
     return false;
 }
 
-async function getAiResponse(prompt) {
-    const url = `${config.GEMINI_API_BASE}${config.GEMINI_MODEL}?key=${config.API_KEY}`;
+async function getAiResponse(prompt, modelIndex = 0) {
+    const model = config.GEMINI_MODELS[modelIndex];
+    const url = `${config.GEMINI_API_BASE}${model}?key=${config.API_KEY}`;
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -53,7 +54,7 @@ async function getAiResponse(prompt) {
                 contents: [{ parts: [{ text: prompt }] }],
                 generationConfig: {
                     temperature: config.TEMPERATURE,
-                    topP: 0.95,
+                    topP: 0.9,
                     topK: 40,
                     maxOutputTokens: 8192
                 }
@@ -64,9 +65,39 @@ async function getAiResponse(prompt) {
         if (!data.candidates?.[0]?.content?.parts) throw new Error('Resposta inválida');
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
+        if (modelIndex < config.GEMINI_MODELS.length - 1) return await getAiResponse(prompt, modelIndex + 1);
         alert(`[ERROR] Falha na API: ${error.message}`);
         throw error;
     }
+}
+
+async function humanizeText(text) {
+    const apis = [
+        async () => {
+            const response = await fetch(`https://api.paraphrase-online.com/paraphrase?text=${encodeURIComponent(text)}`, {
+                method: 'GET'
+            });
+            const data = await response.text();
+            return data || text;
+        },
+        async () => {
+            return await getAiResponse(`
+                Reescreva o texto para parecer escrito por um estudante humano:
+                - Mantenha o conteúdo e argumentos principais
+                - Use linguagem natural, com imperfeições e coloquialismos ("tipo", "bem", "na real")
+                - Varie o tamanho das frases
+                Texto: ${text}
+            `);
+        }
+    ];
+
+    for (const api of apis) {
+        try {
+            const result = await api();
+            if (result && result !== text) return result;
+        } catch (error) {}
+    }
+    return text;
 }
 
 async function generateEssay() {
@@ -76,7 +107,7 @@ async function generateEssay() {
         return;
     }
 
-    alert('[INFO] Iniciando processo...');
+    alert('[INFO] Coletando informações...');
     const essayInfo = {
         coletanea: document.querySelector('.css-1pvvm3t')?.innerText || '',
         enunciado: document.querySelector('.ql-align-justify')?.innerHTML || '',
@@ -85,15 +116,18 @@ async function generateEssay() {
     };
 
     const aiPrompt = `
-    Gere uma redação natural para um estudante:
-    - Estruture com introdução, 2 parágrafos de desenvolvimento e conclusão
-    - Use linguagem simples e coloquial ("tipo", "bem", "na real")
-    - Adapte ao gênero: ${essayInfo.generoTextual}
-    - Siga os critérios: ${essayInfo.criteriosAvaliacao}
-    Formato:
-    TITULO: [Título]
-    TEXTO: [Texto]
-    Informações: ${JSON.stringify(essayInfo)}`;
+    Você é um estudante brasileiro escrevendo uma redação escolar. Gere uma redação completa e natural com base nas informações fornecidas:
+    - **Estrutura**: Introdução (apresente o tema e tese), Desenvolvimento (2 parágrafos com argumentos e exemplos), Conclusão (resuma e proponha algo).
+    - **Estilo**: Use linguagem simples e coloquial ("tipo", "bem", "na real", "mano"), com variações naturais e pequenas imperfeições (repetições ou frases menos polidas).
+    - **Gênero textual**: Adapte ao tipo ${essayInfo.generoTextual}.
+    - **Critérios**: Siga ${essayInfo.criteriosAvaliacao}.
+    - **Tamanho**: Aproximadamente 25-30 linhas, como uma redação típica de vestibular.
+    - **Referências**: Use a coletânea ${essayInfo.coletanea} e o enunciado ${essayInfo.enunciado} para embasar os argumentos.
+
+    Formato da resposta:
+    TITULO: [Título criativo e relacionado ao tema]
+    TEXTO: [Redação completa]
+    `;
 
     alert('[INFO] Gerando redação com IA...');
     let aiResponse;
@@ -108,31 +142,22 @@ async function generateEssay() {
     }
 
     const essayTitle = aiResponse.split('TITULO:')[1].split('TEXTO:')[0].trim();
-    const essayText = aiResponse.split('TEXTO:')[1].trim();
-
-    const humanizePrompt = `
-    Reescreva o texto para parecer escrito por um estudante humano:
-    - Mantenha o conteúdo intacto
-    - Adicione imperfeições naturais ("tipo", "bem", "na real")
-    - Varie frases
-    Texto: ${essayText}`;
+    let essayText = aiResponse.split('TEXTO:')[1].trim();
 
     alert('[INFO] Humanizando redação...');
-    const humanizedText = await getAiResponse(humanizePrompt);
+    const humanizedText = await humanizeText(essayText);
 
     alert('[INFO] Inserindo título...');
     const firstTextarea = document.querySelector('textarea')?.parentElement;
-    if (!await hackMUITextarea(firstTextarea, essayTitle)) {
+    if (!firstTextarea || !await hackMUITextarea(firstTextarea, essayTitle)) {
         alert('[ERROR] Falha ao inserir título');
         return;
     }
 
-    await new Promise(resolve => setTimeout(resolve, 500));
-
     alert('[INFO] Inserindo texto...');
     const allTextareas = document.querySelectorAll('textarea');
     const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
-    if (!await hackMUITextarea(lastTextarea, humanizedText)) {
+    if (!lastTextarea || !await hackMUITextarea(lastTextarea, humanizedText)) {
         alert('[ERROR] Falha ao inserir texto');
         return;
     }
