@@ -1,7 +1,7 @@
 const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
-    API_KEY: 'AIzaSyA97GWoG7AZOVDK5uXQFa0oMf5olNxMyrQ',
+    API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
     UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743800569/menu.js',
     TIMEOUT: 15000,
     MAX_RETRIES: 3,
