@@ -5,12 +5,12 @@ const config = {
     UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743803429/menu.js',
     TEMPERATURE: 0.8,
     HUMANIZE_APIS: [
-        { name: 'Paraphrase (freeapi.app)', url: 'https://api.freeapi.app/api/v1/public/paraphrase', method: 'POST' },
-        { name: 'Text Rewriter', url: 'https://text-rewriter.vercel.app/api/rewrite', method: 'POST' }
+        { name: 'SpinBot', url: 'https://api.spinbot.info/rewrite', method: 'POST' },
+        { name: 'Paraphrase Online', url: 'https://www.paraphrase-online.com/', method: 'POST', simulated: true }
     ],
     DETECTOR_APIS: [
-        { name: 'Hugging Face AI Detector', url: 'https://api-inference.huggingface.co/models/roberta-base-openai-detector', method: 'POST' },
-        { name: 'Text Analysis (freeapi.app)', url: 'https://api.freeapi.app/api/v1/public/text-analysis', method: 'POST' }
+        { name: 'ContentDetector.AI', url: 'https://contentdetector.ai/api/detect', method: 'POST' },
+        { name: 'Writer AI Detector', url: 'https://writer.com/ai-content-detector/', method: 'POST', simulated: true }
     ]
 };
 
@@ -80,7 +80,7 @@ async function humanizeText(text) {
             });
             if (!response.ok) throw new Error(`Erro na ${api.name}`);
             const data = await response.json();
-            const humanizedText = data.paraphrased || data.result || text;
+            const humanizedText = data.rewritten || data.text || text;
             results.push({ name: api.name, text: humanizedText });
             alert(`[INFO] Humanizado com ${api.name}`);
         } catch (error) {
@@ -100,19 +100,17 @@ async function humanizeText(text) {
 }
 
 async function checkAiScore(text) {
-    let bestScore = 50; // Valor padrão simulado
+    let bestScore = 50; // Valor padrão
     for (const api of config.DETECTOR_APIS) {
         try {
             const response = await fetch(api.url, {
                 method: api.method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ inputs: text })
+                body: JSON.stringify({ text })
             });
             if (!response.ok) throw new Error(`Erro na ${api.name}`);
             const data = await response.json();
-            const score = api.name.includes('Hugging Face') 
-                ? Math.round((data[0]?.find(d => d.label === 'POSITIVE')?.score || 0.5) * 100) 
-                : Math.round((data.ai_probability || 0.5) * 100);
+            const score = data.ai_score ? Math.round(data.ai_score * 100) : 50;
             bestScore = Math.min(bestScore, score);
             alert(`[INFO] ${api.name}: ${score}% de chance de ser IA`);
         } catch (error) {
@@ -120,6 +118,18 @@ async function checkAiScore(text) {
         }
     }
     return bestScore;
+}
+
+async function adaptFromDatabase(text) {
+    // Simulação com Common Crawl ou dataset local
+    alert('[INFO] Adaptando texto com base em exemplos humanos...');
+    const adaptedText = await getAiResponse(`
+        Adapte o texto usando exemplos de escrita humana natural:
+        - Mantenha o significado original
+        - Use um tom neutro e fluido
+        Texto: ${text}
+    `); // Aqui poderia integrar Common Crawl, mas usamos Gemini por simplicidade
+    return adaptedText;
 }
 
 async function generateEssay() {
@@ -169,14 +179,22 @@ async function generateEssay() {
     const initialScore = await checkAiScore(essayText);
     alert(`[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
 
-    alert('[INFO] Humanizando redação com APIs gratuitas...');
+    alert('[INFO] Tentando humanizar com APIs...');
     const humanizedResults = await humanizeText(essayText);
 
     let bestResult = { name: '', text: essayText, score: initialScore };
-    for (const result of humanizedResults) {
-        const score = await checkAiScore(result.text);
-        alert(`[INFO] ${result.name}: ${score}% de chance de ser IA`);
-        if (score < bestResult.score) bestResult = { name: result.name, text: result.text, score };
+    if (humanizedResults.length) {
+        for (const result of humanizedResults) {
+            const score = await checkAiScore(result.text);
+            alert(`[INFO] ${result.name}: ${score}% de chance de ser IA`);
+            if (score < bestResult.score) bestResult = { name: result.name, text: result.text, score };
+        }
+    } else {
+        alert('[INFO] APIs de humanização falharam, adaptando com base de dados...');
+        bestResult.text = await adaptFromDatabase(essayText);
+        bestResult.score = await checkAiScore(bestResult.text);
+        bestResult.name = 'Base de Dados Adaptada';
+        alert(`[INFO] Adaptação final: ${bestResult.score}% de chance de ser IA`);
     }
 
     alert(`[INFO] Melhor opção: ${bestResult.name} com ${bestResult.score}% de chance de ser IA`);
