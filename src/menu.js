@@ -2,13 +2,13 @@ const styles = `
     .hck-menu {
         position: fixed;
         bottom: 10px;
-        right: 20px; /* Movido ligeiramente para a esquerda */
-        width: clamp(140px, 20vw, 150px); /* Autoajuste baseado na resolução */
-        max-width: 55vw;
+        right: 20px;
+        width: clamp(180px, 25vw, 200px); /* Aumentado e autoajustável */
+        max-width: 60vw;
         background: #252525;
         color: #fff;
-        border-radius: 12px; /* Bordas mais arredondadas, estilo iOS */
-        padding: 5px;
+        border-radius: 12px;
+        padding: 8px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         z-index: 10000;
         transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
@@ -21,29 +21,29 @@ const styles = `
     }
     .hck-menu.closed {
         width: auto;
-        padding: 3px 8px;
+        padding: 4px 10px;
         background: #303030;
-        border-radius: 10px; /* Bordas arredondadas no estado fechado */
+        border-radius: 10px;
         cursor: pointer;
         transform: translateY(0);
         opacity: 1;
     }
     .hck-menu h3 {
-        margin: 0 0 5px;
-        font-size: clamp(11px, 3vw, 13px);
+        margin: 0 0 6px;
+        font-size: clamp(13px, 3.5vw, 15px);
         text-align: center;
         color: #fff;
         font-weight: 500;
     }
     .hck-menu button {
         width: 100%;
-        padding: 4px;
-        margin: 2px 0;
+        padding: 6px;
+        margin: 3px 0;
         background: #404040;
         border: none;
-        border-radius: 6px; /* Bordas internas mais suaves */
+        border-radius: 6px;
         color: #fff;
-        font-size: clamp(9px, 2.5vw, 11px);
+        font-size: clamp(11px, 3vw, 13px);
         cursor: pointer;
         transition: background 0.2s ease;
     }
@@ -51,29 +51,26 @@ const styles = `
         background: #505050;
     }
     .hck-icon {
-        font-size: clamp(11px, 3vw, 13px);
+        font-size: clamp(13px, 3.5vw, 15px);
         color: #fff;
         font-weight: 500;
     }
     .hck-credits {
-        margin-top: 5px;
-        font-size: clamp(8px, 2vw, 10px);
+        margin-top: 6px;
+        font-size: clamp(11px, 2.5vw, 13px); /* Fonte mais visível */
         text-align: center;
-        color: #888;
-        background: linear-gradient(90deg, #404040, #505050);
+        color: #fff;
+        background: linear-gradient(90deg, #ff4444, #ff6666);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        transition: color 0.3s ease;
-    }
-    .hck-credits:hover {
-        color: #bbb;
+        font-weight: bold;
     }
     @media (max-width: 768px) {
         .hck-menu {
             bottom: 5px;
             right: 10px;
-            width: clamp(120px, 25vw, 140px); /* Ajuste para mobile */
+            width: clamp(160px, 30vw, 180px);
         }
     }
 `;
@@ -95,9 +92,10 @@ function toggleMenu() {
         menu.innerHTML = `
             <h3>HCK REDAÇÃO</h3>
             <button onclick="window.generateEssay()">Gerar</button>
+            <button onclick="window.clearFields()">Limpar</button>
             <button onclick="alert('v5.0 - Hackermoon 2025')">Sobre</button>
             <button onclick="toggleMenu()">Fechar</button>
-            <div class="hck-credits">Hackermoon 2025</div>
+            <div class="hck-credits">Hackermoon</div>
         `;
     } else {
         menu.classList.remove('open');
