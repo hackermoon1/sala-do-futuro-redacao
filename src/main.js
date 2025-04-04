@@ -1,9 +1,17 @@
 const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
-    API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743802683/menu.js',
-    TEMPERATURE: 0.8
+    API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY', // Usada apenas para Gemini
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743499848/ui.js',
+    TEMPERATURE: 0.8,
+    HUMANIZE_APIS: [
+        { name: 'Paraphrase (freeapi.app)', url: 'https://api.freeapi.app/api/v1/public/paraphrase', method: 'POST' },
+        { name: 'Text Rewriter', url: 'https://text-rewriter.vercel.app/api/rewrite', method: 'POST' }
+    ],
+    DETECTOR_APIS: [
+        { name: 'Hugging Face AI Detector', url: 'https://api-inference.huggingface.co/models/roberta-base-openai-detector', method: 'POST' },
+        { name: 'Text Analysis (freeapi.app)', url: 'https://api.freeapi.app/api/v1/public/text-analysis', method: 'POST' }
+    ]
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
@@ -26,11 +34,6 @@ async function hackMUITextarea(textareaElement, textToInsert) {
             textarea.value = textToInsert;
             textarea.dispatchEvent(new InputEvent('input', { bubbles: true, data: textToInsert }));
             return textarea.value === textToInsert;
-        },
-        async () => {
-            textarea.focus();
-            document.execCommand('insertText', false, textToInsert);
-            return textarea.value === textToInsert;
         }
     ];
 
@@ -52,12 +55,7 @@ async function getAiResponse(prompt, modelIndex = 0) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: {
-                    temperature: config.TEMPERATURE,
-                    topP: 0.9,
-                    topK: 40,
-                    maxOutputTokens: 8192
-                }
+                generationConfig: { temperature: config.TEMPERATURE, topP: 0.9, maxOutputTokens: 8192 }
             })
         });
         if (!response.ok) throw new Error('Erro na API');
@@ -66,38 +64,62 @@ async function getAiResponse(prompt, modelIndex = 0) {
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
         if (modelIndex < config.GEMINI_MODELS.length - 1) return await getAiResponse(prompt, modelIndex + 1);
-        alert(`[ERROR] Falha na API: ${error.message}`);
+        alert(`[ERROR] Falha na API Gemini: ${error.message}`);
         throw error;
     }
 }
 
 async function humanizeText(text) {
-    const apis = [
-        async () => {
-            const response = await fetch(`https://api.paraphrase-online.com/paraphrase?text=${encodeURIComponent(text)}`, {
-                method: 'GET'
-            });
-            const data = await response.text();
-            return data || text;
-        },
-        async () => {
-            return await getAiResponse(`
-                Reescreva o texto para parecer escrito por um estudante humano:
-                - Mantenha o conteúdo e argumentos principais
-                - Use linguagem natural, com imperfeições e coloquialismos ("tipo", "bem", "na real")
-                - Varie o tamanho das frases
-                Texto: ${text}
-            `);
-        }
-    ];
-
-    for (const api of apis) {
+    const results = [];
+    for (const api of config.HUMANIZE_APIS) {
         try {
-            const result = await api();
-            if (result && result !== text) return result;
-        } catch (error) {}
+            const response = await fetch(api.url, {
+                method: api.method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+            if (!response.ok) throw new Error(`Erro na ${api.name}`);
+            const data = await response.json();
+            const humanizedText = data.paraphrased || data.result || text;
+            results.push({ name: api.name, text: humanizedText });
+            alert(`[INFO] Humanizado com ${api.name}`);
+        } catch (error) {
+            alert(`[INFO] Falha na ${api.name}: ${error.message}`);
+        }
     }
-    return text;
+    if (!results.length) {
+        const fallbackText = await getAiResponse(`
+            Reescreva o texto para soar natural e humano, sem gírias forçadas:
+            - Mantenha o conteúdo e tom neutro
+            - Use frases variadas e vocabulário comum
+            Texto: ${text}
+        `);
+        results.push({ name: 'Fallback Gemini', text: fallbackText });
+    }
+    return results;
+}
+
+async function checkAiScore(text) {
+    let bestScore = 50; // Valor padrão simulado
+    for (const api of config.DETECTOR_APIS) {
+        try {
+            const response = await fetch(api.url, {
+                method: api.method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ inputs: text })
+            });
+            if (!response.ok) throw new Error(`Erro na ${api.name}`);
+            const data = await response.json();
+            const score = api.name.includes('Hugging Face') 
+                ? Math.round((data[0]?.find(d => d.label === 'POSITIVE')?.score || 0.5) * 100) 
+                : Math.round((data.ai_probability || 0.5) * 100);
+            bestScore = Math.min(bestScore, score);
+            alert(`[INFO] ${api.name}: ${score}% de chance de ser IA`);
+        } catch (error) {
+            alert(`[INFO] Falha na ${api.name}: ${error.message}`);
+        }
+    }
+    return bestScore;
 }
 
 async function generateEssay() {
@@ -116,16 +138,16 @@ async function generateEssay() {
     };
 
     const aiPrompt = `
-    Você é um estudante brasileiro escrevendo uma redação escolar. Gere uma redação completa e natural com base nas informações fornecidas:
-    - **Estrutura**: Introdução (apresente o tema e tese), Desenvolvimento (2 parágrafos com argumentos e exemplos), Conclusão (resuma e proponha algo).
-    - **Estilo**: Use linguagem simples e coloquial ("tipo", "bem", "na real", "mano"), com variações naturais e pequenas imperfeições (repetições ou frases menos polidas).
-    - **Gênero textual**: Adapte ao tipo ${essayInfo.generoTextual}.
-    - **Critérios**: Siga ${essayInfo.criteriosAvaliacao}.
-    - **Tamanho**: Aproximadamente 25-30 linhas, como uma redação típica de vestibular.
-    - **Referências**: Use a coletânea ${essayInfo.coletanea} e o enunciado ${essayInfo.enunciado} para embasar os argumentos.
+    Você é um estudante brasileiro escrevendo uma redação escolar de forma natural:
+    - **Estrutura**: Introdução (tema e tese), Desenvolvimento (2 parágrafos com argumentos e exemplos), Conclusão (resumo e solução).
+    - **Estilo**: Linguagem clara, objetiva e natural, sem gírias ou exageros.
+    - **Gênero textual**: ${essayInfo.generoTextual}.
+    - **Critérios**: ${essayInfo.criteriosAvaliacao}.
+    - **Tamanho**: 25-30 linhas.
+    - **Base**: Use ${essayInfo.coletanea} e ${essayInfo.enunciado}.
 
-    Formato da resposta:
-    TITULO: [Título criativo e relacionado ao tema]
+    Formato:
+    TITULO: [Título relevante]
     TEXTO: [Redação completa]
     `;
 
@@ -144,8 +166,21 @@ async function generateEssay() {
     const essayTitle = aiResponse.split('TITULO:')[1].split('TEXTO:')[0].trim();
     let essayText = aiResponse.split('TEXTO:')[1].trim();
 
-    alert('[INFO] Humanizando redação...');
-    const humanizedText = await humanizeText(essayText);
+    const initialScore = await checkAiScore(essayText);
+    alert(`[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
+
+    alert('[INFO] Humanizando redação com APIs gratuitas...');
+    const humanizedResults = await humanizeText(essayText);
+
+    let bestResult = { name: '', text: essayText, score: initialScore };
+    for (const result of humanizedResults) {
+        const score = await checkAiScore(result.text);
+        alert(`[INFO] ${result.name}: ${score}% de chance de ser IA`);
+        if (score < bestResult.score) bestResult = { name: result.name, text: result.text, score };
+    }
+
+    alert(`[INFO] Melhor opção: ${bestResult.name} com ${bestResult.score}% de chance de ser IA`);
+    const humanizedText = bestResult.text;
 
     alert('[INFO] Inserindo título...');
     const firstTextarea = document.querySelector('textarea')?.parentElement;
@@ -162,7 +197,7 @@ async function generateEssay() {
         return;
     }
 
-    alert('[SUCESSO] Redação inserida com sucesso!');
+    alert(`[SUCESSO] Redação inserida! Humanizada por ${bestResult.name} (${bestResult.score}% IA)`);
 }
 
 const script = document.createElement('script');
