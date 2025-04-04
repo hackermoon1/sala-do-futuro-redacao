@@ -2,12 +2,12 @@ const styles = `
     .hck-menu {
         position: fixed;
         bottom: 10px;
-        right: 10px;
-        width: 150px;
+        right: 20px; /* Movido ligeiramente para a esquerda */
+        width: clamp(140px, 20vw, 150px); /* Autoajuste baseado na resolução */
         max-width: 55vw;
         background: #252525;
         color: #fff;
-        border-radius: 6px;
+        border-radius: 12px; /* Bordas mais arredondadas, estilo iOS */
         padding: 5px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         z-index: 10000;
@@ -23,7 +23,7 @@ const styles = `
         width: auto;
         padding: 3px 8px;
         background: #303030;
-        border-radius: 4px;
+        border-radius: 10px; /* Bordas arredondadas no estado fechado */
         cursor: pointer;
         transform: translateY(0);
         opacity: 1;
@@ -41,7 +41,7 @@ const styles = `
         margin: 2px 0;
         background: #404040;
         border: none;
-        border-radius: 3px;
+        border-radius: 6px; /* Bordas internas mais suaves */
         color: #fff;
         font-size: clamp(9px, 2.5vw, 11px);
         cursor: pointer;
@@ -72,7 +72,8 @@ const styles = `
     @media (max-width: 768px) {
         .hck-menu {
             bottom: 5px;
-            right: 5px;
+            right: 10px;
+            width: clamp(120px, 25vw, 140px); /* Ajuste para mobile */
         }
     }
 `;
@@ -111,4 +112,4 @@ menu.addEventListener('click', (e) => {
     }
 });
 
-setTimeout(() => menu.classList.remove('closed') || menu.classList.add('open') || toggleMenu(), 200);
+setTimeout(() => toggleMenu(), 200);
