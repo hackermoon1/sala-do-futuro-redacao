@@ -3,15 +3,7 @@ const config = {
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
     UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743803429/menu.js',
-    TEMPERATURE: 0.8,
-    HUMANIZE_APIS: [
-        { name: 'SpinBot', url: 'https://api.spinbot.info/rewrite', method: 'POST' },
-        { name: 'Paraphrase Online', url: 'https://www.paraphrase-online.com/', method: 'POST', simulated: true }
-    ],
-    DETECTOR_APIS: [
-        { name: 'ContentDetector.AI', url: 'https://contentdetector.ai/api/detect', method: 'POST' },
-        { name: 'Writer AI Detector', url: 'https://writer.com/ai-content-detector/', method: 'POST', simulated: true }
-    ]
+    TEMPERATURE: 0.9
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
@@ -69,67 +61,37 @@ async function getAiResponse(prompt, modelIndex = 0) {
     }
 }
 
-async function humanizeText(text) {
-    const results = [];
-    for (const api of config.HUMANIZE_APIS) {
-        try {
-            const response = await fetch(api.url, {
-                method: api.method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
-            });
-            if (!response.ok) throw new Error(`Erro na ${api.name}`);
-            const data = await response.json();
-            const humanizedText = data.rewritten || data.text || text;
-            results.push({ name: api.name, text: humanizedText });
-            alert(`[INFO] Humanizado com ${api.name}`);
-        } catch (error) {
-            alert(`[INFO] Falha na ${api.name}: ${error.message}`);
-        }
-    }
-    if (!results.length) {
-        const fallbackText = await getAiResponse(`
-            Reescreva o texto para soar natural e humano, sem gírias forçadas:
-            - Mantenha o conteúdo e tom neutro
-            - Use frases variadas e vocabulário comum
-            Texto: ${text}
-        `);
-        results.push({ name: 'Fallback Gemini', text: fallbackText });
-    }
-    return results;
+// Simulação de uma base de dados de exemplos humanos
+const textDatabase = [
+    "A educação no Brasil enfrenta muitos desafios, como a falta de recursos nas escolas públicas. Muitos alunos não têm acesso a materiais básicos, o que dificulta o aprendizado. Além disso, os professores muitas vezes trabalham em condições ruins, com salários baixos e turmas lotadas. Isso tudo afeta a qualidade do ensino e o futuro dos jovens.",
+    "O meio ambiente está em risco por causa do desmatamento e da poluição. As florestas estão sendo derrubadas para dar lugar a fazendas, e os rios estão cheios de lixo. A gente precisa mudar isso urgente, porque o planeta não aguenta mais. Cada um pode ajudar com pequenas ações, como reciclar ou economizar água.",
+    "A tecnologia mudou muito a vida das pessoas nos últimos anos. Hoje, quase todo mundo usa celular pra tudo, desde falar com amigos até trabalhar. Mas também tem o lado ruim, tipo passar tempo demais nas redes sociais. É importante encontrar um equilíbrio pra aproveitar o que ela oferece sem exagerar."
+];
+
+async function adaptFromDatabase(text) {
+    const randomExample = textDatabase[Math.floor(Math.random() * textDatabase.length)];
+    alert('[INFO] Adaptando texto com base em exemplos humanos...');
+    return await getAiResponse(`
+        Adapte o texto abaixo para soar como escrito por um estudante humano, usando o exemplo como referência de estilo:
+        - Mantenha o conteúdo e o significado original
+        - Use um tom natural, claro e fluido, sem gírias exageradas
+        - Ajuste o vocabulário e a estrutura das frases para parecer autêntico
+        Exemplo de escrita humana: "${randomExample}"
+        Texto para adaptar: "${text}"
+    `);
 }
 
 async function checkAiScore(text) {
-    let bestScore = 50; // Valor padrão
-    for (const api of config.DETECTOR_APIS) {
-        try {
-            const response = await fetch(api.url, {
-                method: api.method,
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
-            });
-            if (!response.ok) throw new Error(`Erro na ${api.name}`);
-            const data = await response.json();
-            const score = data.ai_score ? Math.round(data.ai_score * 100) : 50;
-            bestScore = Math.min(bestScore, score);
-            alert(`[INFO] ${api.name}: ${score}% de chance de ser IA`);
-        } catch (error) {
-            alert(`[INFO] Falha na ${api.name}: ${error.message}`);
-        }
-    }
-    return bestScore;
-}
-
-async function adaptFromDatabase(text) {
-    // Simulação com Common Crawl ou dataset local
-    alert('[INFO] Adaptando texto com base em exemplos humanos...');
-    const adaptedText = await getAiResponse(`
-        Adapte o texto usando exemplos de escrita humana natural:
-        - Mantenha o significado original
-        - Use um tom neutro e fluido
-        Texto: ${text}
-    `); // Aqui poderia integrar Common Crawl, mas usamos Gemini por simplicidade
-    return adaptedText;
+    alert('[INFO] Verificando autenticidade com Gemini...');
+    const detectorPrompt = `
+        Analise o texto abaixo e estime a probabilidade (em porcentagem) de ele ter sido escrito por um humano ou por IA:
+        - Considere padrões como repetições, vocabulário artificial ou fluidez excessiva como sinais de IA
+        - Baseie-se em exemplos de escrita humana natural para comparação
+        - Retorne apenas um número entre 0 e 100, onde 0 é totalmente humano e 100 é totalmente IA
+        Texto: "${text}"
+    `;
+    const score = await getAiResponse(detectorPrompt);
+    return parseInt(score, 10) || 50; // Valor padrão se falhar
 }
 
 async function generateEssay() {
@@ -148,17 +110,17 @@ async function generateEssay() {
     };
 
     const aiPrompt = `
-    Você é um estudante brasileiro escrevendo uma redação escolar de forma natural:
-    - **Estrutura**: Introdução (tema e tese), Desenvolvimento (2 parágrafos com argumentos e exemplos), Conclusão (resumo e solução).
-    - **Estilo**: Linguagem clara, objetiva e natural, sem gírias ou exageros.
-    - **Gênero textual**: ${essayInfo.generoTextual}.
-    - **Critérios**: ${essayInfo.criteriosAvaliacao}.
-    - **Tamanho**: 25-30 linhas.
-    - **Base**: Use ${essayInfo.coletanea} e ${essayInfo.enunciado}.
+        Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica:
+        - **Estrutura**: Introdução (apresente o tema e sua tese), Desenvolvimento (2 parágrafos com argumentos claros e exemplos reais), Conclusão (resuma e sugira uma solução ou reflexão).
+        - **Estilo**: Use linguagem simples, objetiva e fluida, como um estudante escreveria, evitando gírias forçadas ou vocabulário artificial.
+        - **Gênero textual**: Adapte ao tipo "${essayInfo.generoTextual}".
+        - **Critérios**: Siga "${essayInfo.criteriosAvaliacao}".
+        - **Tamanho**: Aproximadamente 25-30 linhas, como uma redação típica de vestibular.
+        - **Base**: Use "${essayInfo.coletanea}" e "${essayInfo.enunciado}" para embasar os argumentos.
 
-    Formato:
-    TITULO: [Título relevante]
-    TEXTO: [Redação completa]
+        Formato da resposta:
+        TITULO: [Título criativo e relacionado ao tema]
+        TEXTO: [Redação completa]
     `;
 
     alert('[INFO] Gerando redação com IA...');
@@ -179,26 +141,10 @@ async function generateEssay() {
     const initialScore = await checkAiScore(essayText);
     alert(`[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
 
-    alert('[INFO] Tentando humanizar com APIs...');
-    const humanizedResults = await humanizeText(essayText);
-
-    let bestResult = { name: '', text: essayText, score: initialScore };
-    if (humanizedResults.length) {
-        for (const result of humanizedResults) {
-            const score = await checkAiScore(result.text);
-            alert(`[INFO] ${result.name}: ${score}% de chance de ser IA`);
-            if (score < bestResult.score) bestResult = { name: result.name, text: result.text, score };
-        }
-    } else {
-        alert('[INFO] APIs de humanização falharam, adaptando com base de dados...');
-        bestResult.text = await adaptFromDatabase(essayText);
-        bestResult.score = await checkAiScore(bestResult.text);
-        bestResult.name = 'Base de Dados Adaptada';
-        alert(`[INFO] Adaptação final: ${bestResult.score}% de chance de ser IA`);
-    }
-
-    alert(`[INFO] Melhor opção: ${bestResult.name} com ${bestResult.score}% de chance de ser IA`);
-    const humanizedText = bestResult.text;
+    alert('[INFO] Adaptando texto com base de dados humana...');
+    const humanizedText = await adaptFromDatabase(essayText);
+    const finalScore = await checkAiScore(humanizedText);
+    alert(`[INFO] Verificação final: ${finalScore}% de chance de ser IA`);
 
     alert('[INFO] Inserindo título...');
     const firstTextarea = document.querySelector('textarea')?.parentElement;
@@ -215,7 +161,7 @@ async function generateEssay() {
         return;
     }
 
-    alert(`[SUCESSO] Redação inserida! Humanizada por ${bestResult.name} (${bestResult.score}% IA)`);
+    alert(`[SUCESSO] Redação inserida! Humanidade estimada: ${100 - finalScore}%`);
 }
 
 const script = document.createElement('script');
