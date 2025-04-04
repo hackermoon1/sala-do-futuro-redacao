@@ -1,8 +1,8 @@
 const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
-    API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY', // Usada apenas para Gemini
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743499848/ui.js',
+    API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743803429/menu.js',
     TEMPERATURE: 0.8,
     HUMANIZE_APIS: [
         { name: 'Paraphrase (freeapi.app)', url: 'https://api.freeapi.app/api/v1/public/paraphrase', method: 'POST' },
