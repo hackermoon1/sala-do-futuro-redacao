@@ -103,7 +103,7 @@
 
 **Sugestões, bugs ou contribuições:**  
 ✉️ Discord: hackermoon  
-📩 Github Issues  
+📩 [Github Issues](https://github.com/hackermoon1/sala-do-futuro-redacao/issues)  
 
 ---
 
