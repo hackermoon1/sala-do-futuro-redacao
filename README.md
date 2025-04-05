@@ -1,97 +1,112 @@
-# **📝 HCK REDAÇÃO**  
+# 📝 HCK REDAÇÃO
+
+<details>
+<summary><strong>📌 Índice Rápido</strong></summary>
+
+1. [Etapas de Desenvolvimento](#-1-etapas-de-desenvolvimento)
+2. [Como Usar (Beta Atual)](#-2-como-usar-beta-atual)
+3. [Métricas e Eficácia](#-3-métricas-e-eficácia)
+4. [Próximas Atualizações](#-4-próximas-atualizações)
+5. [Contato e Suporte](#-5-contato-e-suporte)
+</details>
 
 ---
 
-## **📌 Índice Rápido**  
-- [1. Etapas de Desenvolvimento](#-1-etapas-de-desenvolvimento)  
-- [2. Como Usar (Beta Atual)](#-2-como-usar-beta-atual)  
-- [3. Métricas e Eficácia](#-3-métricas-e-eficácia)  
-- [4. Próximas Atualizações](#-4-próximos-ajustes)  
-- [5. Contato e Suporte](#-5-contato-e-suporte)  
+## 🔧 1. Etapas de Desenvolvimento
+
+<details>
+<summary><strong>✅ ETAPA 1 - Integração com API</strong></summary>
+
+**Status:** Concluído  
+**Principais Conquistas:**
+- Conexão com a Gemini API (Flash & Pro)
+- Sistema de fallback automático entre modelos
+- Controle de temperatura (0.75–0.95) com penalidade de repetição ajustada
+</details>
+
+<details>
+<summary><strong>✅ ETAPA 2 - Estrutura Básica</strong></summary>
+
+**Status:** Concluído  
+**Principais Conquistas:**
+- Identificação inteligente de campos de input dinâmicos
+- Injeção de conteúdo sem colapsar markup ou UX
+- Sistema de feedback visual discreto integrado
+</details>
+
+<details>
+<summary><strong>✅ ETAPA 3 - Gerador Primário (Prompt Avançado)</strong></summary>
+
+**Status:** Concluído  
+**Principais Conquistas:**
+- Geração no formato dissertativo-argumentativo ENEM
+- Redações com introdução, desenvolvimento e proposta de intervenção bem distribuídos
+- Títulos temáticos gerados com 3–4 palavras (sem clichês)
+- Injeção da coletânea + critérios como base contextual
+</details>
+
+<details>
+<summary><strong>✅ ETAPA 4 - Humanização Avançada</strong></summary>
+
+**Status:** Implementado  
+**Melhorias:**
+- Frases balanceadas (70% médias, 20% curtas, 10% longas)
+- Variação lexical e eliminação de termos genéricos
+- Pontuação natural com cadência realista (máx. 1 vírgula por frase curta)
+- Substituição de conectores IA por conectivos de uso humano real
+- Simulação de progressão argumentativa humana (sem fórmulas prontas)
+</details>
+
+<details>
+<summary><strong>⏳ ETAPA 5 - Otimização Final</strong></summary>
+
+**Status:** Em planejamento  
+**Objetivos:**
+- Pré-processador de perfil léxico do usuário (customização por escrita)
+- Banco de dados com referências reais de redações nota 1000
+- Estilização de redações por tipo de tema (filosófico, sociológico, político)
+</details>
 
 ---
 
-## **🔧 1. Etapas de Desenvolvimento**  
+## � 2. Como Usar (Beta Atual)
 
-### **✅ ETAPA 1 - Integração com API**  
-- **Status:** Concluído  
-- **Principais Conquistas:**  
-  - Conexão estável com a **Gemini API** (Flash e Pro)  
-  - Sistema de **fallback automático** entre modelos  
-  - Controle de **temperatura (0.7-0.85)** para equilibrar criatividade e coerência  
-
-### **✅ ETAPA 2 - Estrutura Básica**  
-- **Status:** Concluído  
-- **Principais Conquistas:**  
-  - Detecção automática de **campos de texto** (incluindo React)  
-  - Injeção de conteúdo **sem quebrar a formatação**  
-  - Notificações visuais **personalizadas**  
-
-### **✅ ETAPA 3 - Gerador Primário**  
-- **Status:** Concluído  
-- **Principais Conquistas:**  
-  - Geração de **redações no padrão ENEM**  
-  - Adaptação automática a **coletâneas e critérios**  
-  - Títulos **objetivos e temáticos**  
-
-### **🔄 ETAPA 4 - Humanização (Em Ajustes)**  
-- **Status:** Em progresso  
-- **Conquistas:**  
-  - Substituição de **termos robóticos** (ex: "Além disso" → "Ademais")  
-  - Pontuação **natural** (máx. 1 vírgula por frase)  
-  - **Variação de frases** (curtas, médias e longas)  
-- **Pendências:**  
-  - Análise de perfil léxico (em teste)  
-
-### **⏳ ETAPA 5 - Otimização Final (Pendente)**  
-- **Objetivos:**  
-  - Detecção automática de **critérios de correção**  
-  - Pré-análise **inteligente da coletânea**  
-  - Adicionar **banco de dados universal de textos** como exemplo para temas complexos  
-
----
-
-## **🚀 2. Como Usar (Beta Atual)**  
-
-### **Instruções de Uso:**  
-1. Abra o menu de **favoritos** no seu navegador.  
-2. Selecione a opção **"Adicionar"**.  
-3. Cole o seguinte código no campo de URL:  
+**Instruções de Uso:**
+1. Abra o menu de favoritos no seu navegador
+2. Selecione a opção "Adicionar"
+3. Cole o seguinte código no campo de URL:
    ```javascript
    javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743858866/main.js').then(r=>r.text()).then(r=>eval(r))
    ```
-4. Salve como **"HCK REDAÇÃO"**.  
+4. Salve como "HCK REDAÇÃO"
 
-🔹 *Compatível com todos os navegadores modernos.*  
-
----
-
-## **📊 3. Métricas e Eficácia**  
-
-| **Métrica**          | **Status**   | **Detalhes**                     |  
-|----------------------|-------------|----------------------------------|  
-| **Humanização**      | 75-95%      | Testado em **GPTZero e Originality.ai** |  
-| **Detecção IA**      | 5-30%       | Taxa de falsos positivos mínima  |  
-| **Adequação ENEM**   | 100%        | Estrutura **comprovada**         |  
-| **Velocidade**       | 12-15s      | Depende da complexidade do tema  |  
+**🔹 Compatível com:** Todos os navegadores modernos
 
 ---
 
-## **🔜 4. Próximos Ajustes**  
-1. **📌 Exemplos mais variados** para evitar repetição de casos.  
-2. **🔍 Sistema de citações inteligentes** para garantir a veracidade das informações.  
-3. **📏 Ajuste automático de tamanho** das redações (entre 1700-3080 caracteres).  
+## 📊 3. Métricas e Eficácia (v3.0)
+
+*(DADOS INDISPONÍVEIS)*
 
 ---
 
-## **📞 5. Contato e Suporte**  
-- **Relatórios de bugs/sugestões:**  
-  - ✉️ Discord: `hackermoon`  
-  - 📩 [Github Issues](https://github.com/hackermoon1/sala-do-futuro-redacao/issues)  
+## 🔜 4. Próximas Atualizações
+
+1. **📌 Customização de escrita por perfil de aluno**
+2. **🔍 Sistema de geração com referências reais e fontes confiáveis**
+3. **🧠 Inteligência contextual sobre a coletânea**
+4. **✂️ Compressão/expansão automática de texto (1700–3080 caracteres)**
 
 ---
 
-🔹 **Atualizado em:** 05/04/2025  
-🔹 **Versão:** 3.0 BETA  
+## 📞 5. Contato e Suporte
 
---- 
+**Sugestões, bugs ou contribuições:**  
+✉️ Discord: hackermoon  
+📩 Github Issues  
+
+---
+
+**🔹 Atualizado em:** 05/04/2025  
+**🔹 Versão:** 3.0 BETA
+```.
