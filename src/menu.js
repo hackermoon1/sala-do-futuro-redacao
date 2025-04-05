@@ -5,11 +5,12 @@ const styles = `
         right: 20px;
         width: clamp(180px, 25vw, 200px);
         max-width: 60vw;
-        background: #252525;
+        background: rgba(37, 37, 37, 0.9);
         color: #fff;
         border-radius: 12px;
         padding: 8px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        backdrop-filter: blur(5px);
         z-index: 10000;
         transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
         transform: translateY(120%);
@@ -22,11 +23,12 @@ const styles = `
     .hck-menu.closed {
         width: auto;
         padding: 4px 12px;
-        background: #303030;
+        background: rgba(48, 48, 48, 0.9);
         border-radius: 10px;
         cursor: pointer;
         transform: translateY(0);
         opacity: 1;
+        backdrop-filter: blur(5px);
     }
     .hck-menu h3 {
         margin: 0 0 8px;
@@ -39,28 +41,30 @@ const styles = `
         background-clip: text;
         -webkit-text-fill-color: transparent;
         letter-spacing: 1.5px;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        font-family: 'Inter', Arial, sans-serif;
     }
     .hck-menu button {
         width: 100%;
         padding: 6px;
         margin: 3px 0;
-        background: #404040;
+        background: rgba(64, 64, 64, 0.9);
         border: none;
         border-radius: 6px;
         color: #fff;
         font-size: clamp(11px, 3vw, 13px);
         cursor: pointer;
         transition: background 0.2s ease;
+        font-family: 'Inter', Arial, sans-serif;
     }
     .hck-menu button:hover {
-        background: #505050;
+        background: rgba(80, 80, 80, 0.9);
     }
     .hck-icon {
         font-size: clamp(13px, 3.5vw, 15px);
         color: #fff;
         font-weight: 500;
         letter-spacing: 1px;
+        font-family: 'Inter', Arial, sans-serif;
     }
     .hck-credits {
         margin-top: 8px;
@@ -72,7 +76,7 @@ const styles = `
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: bold;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        font-family: 'Inter', Arial, sans-serif;
     }
     @media (max-width: 768px) {
         .hck-menu {
