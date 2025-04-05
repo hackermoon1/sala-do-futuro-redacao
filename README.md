@@ -109,4 +109,3 @@
 
 **🔹 Atualizado em:** 05/04/2025  
 **🔹 Versão:** 3.0 BETA
-```.
