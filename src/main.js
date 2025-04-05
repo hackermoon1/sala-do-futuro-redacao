@@ -90,54 +90,57 @@ function showNotification(message, progress) {
 
 async function generateAndAdaptEssay(theme, essayInfo) {
     const generationPrompt = `
-        Você é um estudante brasileiro escrevendo uma redação escolar com perfeição gramatical, mas com marcas sutis de escrita humana para enganar detectores de IA:
+        Você é um estudante brasileiro escrevendo uma redação escolar com marcas sutis de escrita humana, seguindo este algoritmo:
 
-        ▼▼ 1. ESTRUTURA CAMUFLADA ▼▼
-        • **Introdução** (5-7 linhas):
-          - Comece com 1 destes:
-            [Dado aproximado + fonte vaga] (ex.: "Estudos apontam que cerca de...").
-            [Pergunta retórica indireta] (ex.: "Quem nunca se perguntou...").
-            [Comparação histórica breve] (ex.: "Diferente do passado, quando...").
-          - Termine com transição inesperada ("Mas esse quadro esconde...").
+        ▼▼ 1. ANÁLISE DA COLETÂNEA ▼▼
+        • Extraia 2-3 conceitos-chave (ex.: "conhecimento científico", "educação", "desinformação").
+        • Identifique 1 contradição ou ironia presente (ex.: "Embora a ciência seja essencial, poucos a compreendem").
+        • Selecione 1 dado real (se houver) ou use um dado aproximado (ex.: "cerca de 70%").
+
+        ▼▼ 2. ESTRUTURA DINÂMICA ▼▼
+        • **Introdução** (4-5 linhas):
+          - [Contexto] + [Ironia/Contradição] (ex.: "A ciência avança, mas a sociedade, ironicamente, permanece desinformada").
+          - [Tese] sem verbos no infinitivo (ex.: "A educação científica torna-se uma necessidade urgente").
         • **Desenvolvimento** (2 parágrafos):
           - Parágrafo 1: 
-            [1 exemplo concreto genérico] (ex.: "Em comunidades carentes, a falta de acesso...") + [1 termo técnico explicado entre vírgulas] (ex.: "método científico, que busca evidências,").
+            [Argumento] + [Exemplo da coletânea, genérico] (ex.: "Em comunidades carentes, a falta de acesso é evidente") + [Análise] com comparação cultural (ex.: "Diferente de países onde a ciência é valorizada...").
           - Parágrafo 2: 
-            [1 contradição proposital] (ex.: "Embora pareça simples...") + [1 citação reconstruída] (ex.: "Um pesquisador já dizia que...").
-        • **Conclusão** (4-5 linhas):
-          - [1 proposta específica] (ex.: "investir em aulas práticas") + [1 metáfora simples] (ex.: "como uma semente que cresce").
+            [Contraponto] (ex.: "Por outro lado...") + [Referência histórica/artística] (ex.: "Na Idade Média, o conhecimento era restrito...") + [Consequência] + [Dado, se existir].
+        • **Conclusão** (4 linhas):
+          - [Solução] com agente específico (ex.: "O governo deve investir em educação científica").
+          - [Final] com analogia inesperada (ex.: "como um farol que guia na escuridão").
 
-        ▼▼ 2. TÉCNICAS DE HUMANIZAÇÃO INVISÍVEL ▼▼
-        • **Pontuação estratégica**:
-          - 1 vírgula rítmica por parágrafo (ex.: "A ciência, essencial para todos, precisa de apoio").
-          - 1 travessão (–) para intercalação a cada 10 frases (ex.: "A educação – um pilar essencial – está em crise").
-          - 1 ponto-e-vírgula para variar o ritmo (ex.: "A ciência ensina; a desinformação confunde.").
-        • **Variação lexical**:
-          - 3 sinônimos diferentes para cada conceito-chave (ex.: "ciência" → "conhecimento", "pesquisa", "estudo").
-          - 1 repetição estratégica para ênfase (ex.: "A educação é a base. A base para o futuro.").
-        • **Sintaxe humana**:
-          - 70% ordem direta (ex.: "A ciência ajuda as pessoas.").
-          - 20% inversões sutis (ex.: "Fundamental é a educação para...").
-          - 10% frases nominais (ex.: "Desafio constante.").
+        ▼▼ 3. TÉCNICAS ANTI-DETECÇÃO ▼▼
+        • **Pontuação**:
+          - Máximo 2 vírgulas por frase (ex.: "A ciência, essencial, ajuda a sociedade").
+          - 1 ponto-e-vírgula a cada 10 frases (ex.: "A educação avança; a desinformação persiste").
+          - Zero travessões.
+        • **Sintaxe**:
+          - 60% frases diretas (ex.: "A ciência ajuda as pessoas").
+          - 30% inversões (ex.: "Preocupante é a falta de educação").
+          - 10% frases nominais (ex.: "Necessidade urgente").
+        • **Vocabulário**:
+          - 3 sinônimos para cada termo-chave (ex.: "ciência" → "conhecimento", "pesquisa", "estudo").
+          - 1 repetição estratégica (ex.: "A educação é essencial. Essencial para o futuro").
 
-        ▼▼ 3. PROIBIÇÕES EXPRESSAS ▼▼
-        • Nenhuma gíria ou coloquialismo (ex.: "pra", "né").
-        • Nenhum dado preciso (ex.: "70%" → "cerca de 70%").
-        • Nenhum termo técnico sem explicação (ex.: "método científico" deve ser explicado).
+        ▼▼ 4. TESTE FINAL ▼▼
+        • Nenhuma frase com mais de 25 palavras.
+        • Nenhum dado não mencionado na coletânea (ou use dados aproximados).
         • Nenhuma citação direta (apenas reconstruída).
+        • Variação de comprimento de parágrafos.
 
-        ▼▼ 4. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
+        ▼▼ 5. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
         - Use linguagem simples, objetiva e formal, como uma redação escolar.
-        - Use palavras comuns e fáceis, sem gírias ou termos difíceis (ex.: "paradigma", "epistemológico").
+        - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
         - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
         - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
-        - Evite repetições de palavras ou ideias (exceto a repetição estratégica para ênfase).
+        - Evite repetições de palavras ou ideias (exceto a repetição estratégica).
         - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
         - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
         - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - **Gênero textual**: "${essayInfo.generoTextual}".
         - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-        - **Tamanho**: 25-30 linhas, com 3-4 marcas humanas sutis.
+        - **Tamanho**: 25-30 linhas, com variação de comprimento de parágrafos.
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
@@ -165,10 +168,10 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
         - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
         - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
-        - **Pontuação estratégica**: 1 vírgula rítmica por parágrafo, 1 travessão a cada 10 frases, 1 ponto-e-vírgula para variar o ritmo.
-        - **Variação lexical**: 3 sinônimos para conceitos-chave, 1 repetição estratégica para ênfase.
-        - **Sintaxe humana**: 70% ordem direta, 20% inversões sutis, 10% frases nominais.
-        - **Proibições**: Sem gírias, sem dados precisos, sem termos técnicos sem explicação, sem citações diretas.
+        - **Pontuação**: Máximo 2 vírgulas por frase, 1 ponto-e-vírgula a cada 10 frases, zero travessões.
+        - **Sintaxe**: 60% frases diretas, 30% inversões, 10% frases nominais.
+        - **Vocabulário**: 3 sinônimos para conceitos-chave, 1 repetição estratégica.
+        - **Teste final**: Nenhuma frase com mais de 25 palavras, nenhum dado fora da coletânea, nenhuma citação direta, variação de comprimento de parágrafos.
         Texto para adaptar: "${essayText}"
     `;
 
@@ -183,14 +186,14 @@ async function checkAiScore(text) {
     const detectorPrompt = `
         Analise o texto abaixo e estime a probabilidade (%) de ser IA, com base nestas categorias:
         - **Repetições**: Uso excessivo de palavras ou frases (ex.: "letramento científico" várias vezes).
-        - **Pontuação**: Uso de "!" ou "?", vírgulas ilógicas, falta de vírgulas rítmicas, travessões ou ponto-e-vírgula.
-        - **Estrutura**: Frases longas, transições forçadas ou ausência de variações (inversões, frases nominais).
+        - **Pontuação**: Uso de "!" ou "?", mais de 2 vírgulas por frase, presença de travessões, falta de ponto-e-vírgula.
+        - **Estrutura**: Frases longas (>25 palavras), parágrafos de comprimento uniforme, transições forçadas.
         - **Vocabulário**: Gírias (ex.: "pra", "né") ou termos complexos (ex.: "paradigma") sem explicação.
-        - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo") ou falta de argumentos objetivos.
+        - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo"), dados fora da coletânea, citações diretas.
         - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
         - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
         - **Tom**: Uso de tom conversacional (ex.: "a gente", "virar esse jogo").
-        - **Padrões humanos**: Falta de inversões sutis (20%), frases nominais (10%), ou repetição estratégica para ênfase.
+        - **Padrões humanos**: Falta de inversions (30%), frases nominais (10%), ou repetição estratégica.
         - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
