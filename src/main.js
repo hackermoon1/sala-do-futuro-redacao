@@ -70,9 +70,14 @@ const HUMAN_WRITER_PRO = {
       - Coletânea (resumo): "${essayInfo.coletanea.substring(0, 150)}..."
       - Critérios de avaliação: "${essayInfo.criteriosAvaliacao}"
 
-      ▼ FORMATO DE SAÍDA
-      - TÍTULO: 3 a 4 palavras em caixa alta
-      - TEXTO: entre 28 e 32 linhas (~2400 caracteres, margem 1700 a 3080)
+      ▼ FORMATO DE SAÍDA (OBRIGATÓRIO)
+      - O texto deve ser retornado EXATAMENTE no formato abaixo, sem omitir ou alterar as palavras "TÍTULO:" e "TEXTO:". Siga rigorosamente:
+      TÍTULO: [3 a 4 palavras em caixa alta]
+      TEXTO: [o texto da redação, entre 28 e 32 linhas, ~2400 caracteres, margem 1700 a 3080]
+
+      Exemplo de formato:
+      TÍTULO: EXEMPLO DE TÍTULO
+      TEXTO: Aqui começa o texto da redação, com introdução, desenvolvimento e conclusão...
 
       Gere o texto completo com coesão e progressão clara de ideias. Evite qualquer marca de inteligência artificial ou inconsistência gramatical. Adote o estilo de um aluno nota 1000, com ritmo de escrita realista.
     `;
@@ -128,7 +133,7 @@ async function hackMUITextarea(textareaElement, textToInsert) {
     try {
       if (await method()) return true;
     } catch (error) {
-      // Ignorar erros e tentar o próximo método
+      console.error('Erro ao tentar hackMUITextarea:', error);
     }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
@@ -153,11 +158,14 @@ async function getAiResponse(prompt, modelIndex = 0) {
       })
     });
 
-    if (!response.ok) throw new Error('Erro na API');
+    if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
     const data = await response.json();
     if (!data.candidates?.[0]?.content?.parts) throw new Error('Resposta inválida');
-    return data.candidates[0].content.parts[0].text;
+    const text = data.candidates[0].content.parts[0].text;
+    console.log('[getAiResponse] Resposta da API:', text); // Log para debugging
+    return text;
   } catch (error) {
+    console.error(`[getAiResponse] Erro no modelo ${model}:`, error);
     if (modelIndex < config.GEMINI_MODELS.length - 1) {
       return await getAiResponse(prompt, modelIndex + 1);
     }
@@ -194,34 +202,56 @@ function showNotification(message, progress) {
   setTimeout(() => (notification.style.opacity = '0'), 2000);
 }
 
-async function generateAndAdaptEssay(theme, essayInfo) {
+async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
+  const maxAttempts = 3;
   const prompt = HUMAN_WRITER_PRO.generatePrompt(essayInfo);
   showNotification('Gerando redação', 20);
 
-  let essay = await getAiResponse(prompt);
-  if (!essay.includes('TÍTULO:') || !essay.includes('TEXTO:')) {
-    showNotification('Erro no formato', 0);
-    throw new Error('Formato inválido');
+  try {
+    let essay = await getAiResponse(prompt);
+    console.log('[generateAndAdaptEssay] Texto bruto:', essay); // Log para debugging
+
+    // Verificar o formato
+    if (!essay.includes('TÍTULO:') || !essay.includes('TEXTO:')) {
+      if (attempt < maxAttempts) {
+        console.warn(`[generateAndAdaptEssay] Formato inválido na tentativa ${attempt}. Tentando novamente...`);
+        showNotification('Formato incorreto, tentando novamente', 20);
+        return await generateAndAdaptEssay(theme, essayInfo, attempt + 1);
+      } else {
+        // Se todas as tentativas falharem, forçar um formato básico
+        console.warn('[generateAndAdaptEssay] Máximo de tentativas atingido. Forçando formato básico.');
+        showNotification('Erro persistente, ajustando formato', 20);
+        const fallbackTitle = theme.toUpperCase().slice(0, 20); // Título básico baseado no tema
+        return {
+          title: fallbackTitle,
+          text: essay // Usa o texto bruto, mesmo que não esteja no formato ideal
+        };
+      }
+    }
+
+    const essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
+    let essayText = essay.split('TEXTO:')[1].trim();
+
+    // Pós-processamento
+    essayText = await HUMAN_WRITER_PRO.humanizeText(essayText);
+
+    // Verificação de tamanho
+    if (essayText.length < 1700) {
+      const additionalPrompt = `
+        Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
+        Texto: "${essayText}"
+      `;
+      essayText = await getAiResponse(additionalPrompt);
+    } else if (essayText.length > 3080) {
+      essayText = essayText.substring(0, 3080).replace(/\s+\S*$/, '');
+    }
+
+    return { title: essayTitle, text: essayText };
+  } catch (error) {
+    console.error('[generateAndAdaptEssay] Erro:', error);
+    showNotification('Erro ao gerar redação', 0);
+    throw error;
   }
-
-  const essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
-  let essayText = essay.split('TEXTO:')[1].trim();
-
-  // Pós-processamento
-  essayText = await HUMAN_WRITER_PRO.humanizeText(essayText);
-
-  // Verificação de tamanho
-  if (essayText.length < 1700) {
-    const additionalPrompt = `
-      Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
-      Texto: "${essayText}"
-    `;
-    essayText = await getAiResponse(additionalPrompt);
-  } else if (essayText.length > 3080) {
-    essayText = essayText.substring(0, 3080).replace(/\s+\S*$/, '');
-  }
-
-  return { title: essayTitle, text: essayText };
 }
 
 async function checkAiScore(text) {
@@ -327,35 +357,40 @@ async function generateEssay() {
   };
   const theme = essayInfo.enunciado.split(' ').slice(0, 5).join(' ');
 
-  const { title, text } = await generateAndAdaptEssay(theme, essayInfo);
+  try {
+    const { title, text } = await generateAndAdaptEssay(theme, essayInfo);
 
-  const initialScore = await checkAiScore(text);
-  showNotification(`Inicial: ${initialScore}% IA`, 80);
+    const initialScore = await checkAiScore(text);
+    showNotification(`Inicial: ${initialScore}% IA`, 80);
 
-  const finalScore = await checkAiScore(text);
-  showNotification(`Final: ${finalScore}% IA`, 90);
+    const finalScore = await checkAiScore(text);
+    showNotification(`Final: ${finalScore}% IA`, 90);
 
-  showNotification('Inserindo título', 95);
-  const allTextareas = document.querySelectorAll('textarea');
-  if (allTextareas.length === 0) {
-    showNotification('Nenhum campo de título encontrado', 0);
-    return;
+    showNotification('Inserindo título', 95);
+    const allTextareas = document.querySelectorAll('textarea');
+    if (allTextareas.length === 0) {
+      showNotification('Nenhum campo de título encontrado', 0);
+      return;
+    }
+
+    const firstTextarea = allTextareas[0]?.parentElement;
+    if (!firstTextarea || !(await hackMUITextarea(firstTextarea, title))) {
+      showNotification('Erro no título', 0);
+      return;
+    }
+
+    showNotification('Inserindo texto', 98);
+    const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
+    if (!lastTextarea || !(await hackMUITextarea(lastTextarea, text))) {
+      showNotification('Erro no texto', 0);
+      return;
+    }
+
+    showNotification(`Concluído: ${100 - finalScore}% humano`, 100);
+  } catch (error) {
+    console.error('[generateEssay] Erro:', error);
+    showNotification('Erro ao gerar redação', 0);
   }
-
-  const firstTextarea = allTextareas[0]?.parentElement;
-  if (!firstTextarea || !(await hackMUITextarea(firstTextarea, title))) {
-    showNotification('Erro no título', 0);
-    return;
-  }
-
-  showNotification('Inserindo texto', 98);
-  const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
-  if (!lastTextarea || !(await hackMUITextarea(lastTextarea, text))) {
-    showNotification('Erro no texto', 0);
-    return;
-  }
-
-  showNotification(`Concluído: ${100 - finalScore}% humano`, 100);
 }
 
 const script = document.createElement('script');
