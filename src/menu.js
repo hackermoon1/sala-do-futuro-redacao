@@ -111,7 +111,7 @@
 
     // Créditos
     const credits = document.createElement('div');
-    credits.textContent = 'Desenvolvido por [Seu Nome]';
+    credits.textContent = 'Desenvolvido por Hackermoon';
     credits.style.cssText = `
         font-size: 12px;
         color: #ccc;
