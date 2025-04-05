@@ -90,59 +90,58 @@ function showNotification(message, progress) {
 
 async function generateAndAdaptEssay(theme, essayInfo) {
     const generationPrompt = `
-        Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica, aplicando técnicas de camuflagem para parecer humano:
+        Você é um estudante brasileiro escrevendo uma redação escolar com perfeição gramatical, mas com marcas sutis de escrita humana para enganar detectores de IA:
 
-        ▼▼ 1. PADRÃO DE ESCRITA HUMANA ▼▼
-        • **Frases quebradas**:
-          - 20% frases incompletas com propósito retórico ("O impacto? Enorme.").
-          - 1-2 interjeições por parágrafo ("Veja bem:", "Ora,").
-        • **Pontuação orgânica**:
-          - Vírgulas onde humanos pausariam (ex.: "A ciência, essencial para todos, precisa de apoio").
-          - 1 travessão (–) a cada 5 frases para intercalações (ex.: "A educação – um pilar essencial – está em crise").
-          - 1 parêntese ocasional (ex.: "(sim, os dados confirmam)").
-
-        ▼▼ 2. SUBSTITUIÇÕES OBRIGATÓRIAS ▼▼
-        • Em vez de "É imprescindível que" → "Não se pode ignorar:".
-        • Em vez de "Conforme especialistas" → "Quem trabalha na área sabe:".
-        • Em vez de "Por exemplo" → "Tome como caso".
-
-        ▼▼ 3. ESTRUTURA NÃO LINEAR ▼▼
-        • **Introdução** (6-8 linhas):
-          - Comece com 1 pergunta ou afirmação impactante (ex.: "O que explica tantos erros?").
-          - Use 1 dado aproximado + fonte vaga ("pesquisas recentes").
-          - Termine com transição inesperada ("Mas calma, isso é só a ponta do iceberg").
+        ▼▼ 1. ESTRUTURA CAMUFLADA ▼▼
+        • **Introdução** (5-7 linhas):
+          - Comece com 1 destes:
+            [Dado aproximado + fonte vaga] (ex.: "Estudos apontam que cerca de...").
+            [Pergunta retórica indireta] (ex.: "Quem nunca se perguntou...").
+            [Comparação histórica breve] (ex.: "Diferente do passado, quando...").
+          - Termine com transição inesperada ("Mas esse quadro esconde...").
         • **Desenvolvimento** (2 parágrafos):
           - Parágrafo 1: 
-            * 1 exemplo cotidiano genérico ("Quem nunca viu notícias falsas circularem...").
-            * 1 comparação cultural ("Diferente do que fazem em países desenvolvidos...").
-          - Parágrafo 2:
-            * 1 contradição proposital ("Por outro lado...").
-            * 1 citação reconstruída ("Lembro de ouvir um professor dizer...").
+            [1 exemplo concreto genérico] (ex.: "Em comunidades carentes, a falta de acesso...") + [1 termo técnico explicado entre vírgulas] (ex.: "método científico, que busca evidências,").
+          - Parágrafo 2: 
+            [1 contradição proposital] (ex.: "Embora pareça simples...") + [1 citação reconstruída] (ex.: "Um pesquisador já dizia que...").
         • **Conclusão** (4-5 linhas):
-          - 1 proposta concreta mas não técnica ("que tal começarmos nas escolas?").
-          - 1 final com linguagem figurativa ("assim como formigas reconstroem seu formigueiro").
+          - [1 proposta específica] (ex.: "investir em aulas práticas") + [1 metáfora simples] (ex.: "como uma semente que cresce").
 
-        ▼▼ 4. ARMADILHAS A EVITAR ▼▼
-        • NUNCA use "letramento científico" mais de 1 vez (use sinônimos como "conhecimento científico", "educação científica").
-        • PROIBIDO frases com mais de 30 palavras.
-        • EVITE sequências lógicas perfeitas (introduza quebras de padrão).
+        ▼▼ 2. TÉCNICAS DE HUMANIZAÇÃO INVISÍVEL ▼▼
+        • **Pontuação estratégica**:
+          - 1 vírgula rítmica por parágrafo (ex.: "A ciência, essencial para todos, precisa de apoio").
+          - 1 travessão (–) para intercalação a cada 10 frases (ex.: "A educação – um pilar essencial – está em crise").
+          - 1 ponto-e-vírgula para variar o ritmo (ex.: "A ciência ensina; a desinformação confunde.").
+        • **Variação lexical**:
+          - 3 sinônimos diferentes para cada conceito-chave (ex.: "ciência" → "conhecimento", "pesquisa", "estudo").
+          - 1 repetição estratégica para ênfase (ex.: "A educação é a base. A base para o futuro.").
+        • **Sintaxe humana**:
+          - 70% ordem direta (ex.: "A ciência ajuda as pessoas.").
+          - 20% inversões sutis (ex.: "Fundamental é a educação para...").
+          - 10% frases nominais (ex.: "Desafio constante.").
 
-        ▼▼ 5. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
+        ▼▼ 3. PROIBIÇÕES EXPRESSAS ▼▼
+        • Nenhuma gíria ou coloquialismo (ex.: "pra", "né").
+        • Nenhum dado preciso (ex.: "70%" → "cerca de 70%").
+        • Nenhum termo técnico sem explicação (ex.: "método científico" deve ser explicado).
+        • Nenhuma citação direta (apenas reconstruída).
+
+        ▼▼ 4. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
         - Use linguagem simples, objetiva e formal, como uma redação escolar.
-        - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
+        - Use palavras comuns e fáceis, sem gírias ou termos difíceis (ex.: "paradigma", "epistemológico").
         - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
         - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
-        - Evite repetições de palavras ou ideias.
+        - Evite repetições de palavras ou ideias (exceto a repetição estratégica para ênfase).
         - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
         - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
-        - Não use opiniões pessoais (ex.: "Eu penso que...") or exemplos da vida (ex.: "Na minha escola...").
+        - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - **Gênero textual**: "${essayInfo.generoTextual}".
         - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-        - **Tamanho**: 25-30 linhas, com pelo menos 3 quebras de padrão.
+        - **Tamanho**: 25-30 linhas, com 3-4 marcas humanas sutis.
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
-        TITULO: [Título curto, até 4 palavras, preferencialmente frase nominal, sem verbo]
+        TITULO: [Frase nominal de 3-4 palavras, sem verbo]
         TEXTO: [Redação completa, sem tags HTML]
     `;
 
@@ -166,10 +165,10 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
         - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
         - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
-        - **Frases quebradas**: 20% frases incompletas com propósito retórico, 1-2 interjeições por parágrafo ("Veja bem:", "Ora,").
-        - **Pontuação orgânica**: Vírgulas em pausas naturais, 1 travessão a cada 5 frases, 1 parêntese ocasional.
-        - **Substituições**: "Não se pode ignorar:" para "É imprescindível que", "Quem trabalha na área sabe:" para "Conforme especialistas", "Tome como caso" para "Por exemplo".
-        - **Armadilhas**: Não use "letramento científico" mais de 1 vez (use "conhecimento científico", "educação científica"), proíba frases com mais de 30 palavras, evite sequências lógicas perfeitas.
+        - **Pontuação estratégica**: 1 vírgula rítmica por parágrafo, 1 travessão a cada 10 frases, 1 ponto-e-vírgula para variar o ritmo.
+        - **Variação lexical**: 3 sinônimos para conceitos-chave, 1 repetição estratégica para ênfase.
+        - **Sintaxe humana**: 70% ordem direta, 20% inversões sutis, 10% frases nominais.
+        - **Proibições**: Sem gírias, sem dados precisos, sem termos técnicos sem explicação, sem citações diretas.
         Texto para adaptar: "${essayText}"
     `;
 
@@ -184,14 +183,14 @@ async function checkAiScore(text) {
     const detectorPrompt = `
         Analise o texto abaixo e estime a probabilidade (%) de ser IA, com base nestas categorias:
         - **Repetições**: Uso excessivo de palavras ou frases (ex.: "letramento científico" várias vezes).
-        - **Pontuação**: Uso de "!" ou "?", vírgulas ilógicas, quebras de linha inadequadas.
-        - **Estrutura**: Frases longas (mais de 30 palavras), transições forçadas ou sequências lógicas perfeitas.
-        - **Vocabulário**: Gírias (ex.: "pra", "né") ou termos complexos (ex.: "paradigma") fora de contexto.
+        - **Pontuação**: Uso de "!" ou "?", vírgulas ilógicas, falta de vírgulas rítmicas, travessões ou ponto-e-vírgula.
+        - **Estrutura**: Frases longas, transições forçadas ou ausência de variações (inversões, frases nominais).
+        - **Vocabulário**: Gírias (ex.: "pra", "né") ou termos complexos (ex.: "paradigma") sem explicação.
         - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo") ou falta de argumentos objetivos.
         - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
         - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
         - **Tom**: Uso de tom conversacional (ex.: "a gente", "virar esse jogo").
-        - **Padrões humanos**: Falta de frases incompletas (20%), interjeições ("Veja bem:"), travessões ou parênteses ocasionais.
+        - **Padrões humanos**: Falta de inversões sutis (20%), frases nominais (10%), ou repetição estratégica para ênfase.
         - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
