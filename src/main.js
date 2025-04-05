@@ -3,7 +3,8 @@ const config = {
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
     UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743805356/menu.js',
-    TEMPERATURE: 0.9
+    TEMPERATURE: 0.9,
+    WIKIPEDIA_API: 'https://en.wikipedia.org/w/api.php'
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
@@ -61,29 +62,36 @@ async function getAiResponse(prompt, modelIndex = 0) {
     }
 }
 
-// Base de dados expandida pra 10 exemplos
-const textDatabase = [
-    "A educação no Brasil tem muitos problemas sérios. As escolas públicas, por exemplo, quase nunca têm o material que os alunos precisam pra estudar direito. Os professores também sofrem com salários baixos e salas cheias, o que deixa tudo mais difícil. Isso acaba prejudicando muito o futuro da juventude.",
-    "O meio ambiente tá precisando de ajuda urgente. O desmatamento tá destruindo as florestas pra fazer fazenda, e os rios estão ficando cheios de sujeira. Se continuar assim, o planeta não vai aguentar. Todo mundo pode fazer algo simples, como separar o lixo ou gastar menos água.",
-    "A tecnologia mudou tudo na nossa vida. Hoje, o celular serve pra falar com os outros, trabalhar e até estudar. Só que às vezes a gente exagera, fica horas nas redes sociais e esquece o resto. Acho que o segredo é usar com moderação.",
-    "A violência nas cidades é um problema que não para de crescer. Tem assalto, briga e até coisa pior acontecendo todo dia. A polícia tenta ajudar, mas falta estrutura e mais segurança pras pessoas. Talvez investir em educação e emprego resolva um pouco isso.",
-    "A saúde pública no Brasil deixa muita gente na mão. Os hospitais estão lotados, e às vezes falta remédio ou médico pra atender. Quem depende do SUS sofre pra conseguir consulta. Isso mostra como o governo precisa olhar mais pra essa área.",
-    "O transporte público é uma confusão em vários lugares. Os ônibus vivem cheios, atrasam e quebram fácil. Quem trabalha ou estuda acaba perdendo tempo todo dia. Se tivesse mais investimento, talvez melhorasse a vida de muita gente.",
-    "A desigualdade social é algo que a gente vê em todo canto. Tem gente com muito dinheiro e outros que não têm nem o básico pra viver. Isso vem de anos de políticas ruins e pouca oportunidade. Mudar isso leva tempo, mas é necessário.",
-    "O acesso à cultura no Brasil é bem limitado. Museus e teatros são caros ou ficam só nas cidades grandes. Muita gente nunca teve chance de conhecer essas coisas. Levar cultura pra todos seria um jeito de abrir a cabeça das pessoas.",
-    "O desemprego tá afetando um monte de famílias. Sem trabalho, fica difícil pagar as contas ou colocar comida em casa. As empresas dizem que tá tudo caro pra contratar. O governo podia ajudar mais com cursos ou incentivos.",
-    "A alimentação saudável é um desafio hoje em dia. Comida boa, tipo fruta e verdura, custa caro, enquanto o fast food é mais barato. Isso faz as pessoas comerem mal e terem problema de saúde. Campanhas pra ensinar a comer melhor poderiam ajudar."
-];
+async function fetchHumanTextFromWikipedia(theme) {
+    alert('[INFO] Buscando texto humano na Wikipedia...');
+    try {
+        const url = `${config.WIKIPEDIA_API}?action=query&list=search&srsearch=${encodeURIComponent(theme)}&format=json&origin=*`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Erro na Wikipedia API');
+        const data = await response.json();
+        const topResult = data.query.search[0]?.title;
+        if (!topResult) throw new Error('Nenhum resultado encontrado');
 
-async function adaptFromDatabase(text) {
-    const randomExample = textDatabase[Math.floor(Math.random() * textDatabase.length)];
-    alert('[INFO] Adaptando texto com base em exemplos humanos...');
+        const contentUrl = `${config.WIKIPEDIA_API}?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topResult)}&format=json&origin=*`;
+        const contentResponse = await fetch(contentUrl);
+        const contentData = await contentResponse.json();
+        const page = Object.values(contentData.query.pages)[0];
+        return page.extract || "A educação é essencial. Muitas escolas enfrentam dificuldades. Isso impacta os alunos.";
+    } catch (error) {
+        alert('[INFO] Falha na Wikipedia, usando exemplo padrão');
+        return "A tecnologia avança rápido. As pessoas usam ferramentas digitais diariamente. Isso traz benefícios e desafios.";
+    }
+}
+
+async function adaptFromWikipedia(text, theme) {
+    const humanText = await fetchHumanTextFromWikipedia(theme);
+    alert('[INFO] Adaptando texto com base em exemplo humano da Wikipedia...');
     return await getAiResponse(`
         Adapte o texto abaixo para soar como escrito por um estudante humano, usando o exemplo como referência de estilo:
         - Mantenha o conteúdo e o significado original
-        - Use um tom natural, claro e fluido, com quebras de texto naturais (pontuação variada)
+        - Use um tom natural, claro e fluido, com pontuação moderada (evite excesso de "!" ou "?")
         - Evite padrões de IA como frases longas demais, repetições ou vocabulário artificial
-        Exemplo de escrita humana: "${randomExample}"
+        Exemplo de escrita humana: "${humanText}"
         Texto para adaptar: "${text}"
     `);
 }
@@ -93,7 +101,7 @@ async function checkAiScore(text) {
     const detectorPrompt = `
         Analise o texto abaixo e estime a probabilidade (em porcentagem) de ele ter sido escrito por IA:
         - Considere padrões como frases longas e uniformes, repetições excessivas ou vocabulário artificial como sinais de IA
-        - Compare com escrita humana natural, que tem quebras de texto variadas e tom fluido
+        - Compare com escrita humana natural, que tem pontuação moderada e tom fluido
         - Retorne apenas um número entre 0 e 100, onde 0 é totalmente humano e 100 é totalmente IA
         Texto: "${text}"
     `;
@@ -127,11 +135,12 @@ async function generateEssay() {
         generoTextual: document.querySelector('.css-1cq7p20')?.innerHTML || '',
         criteriosAvaliacao: document.querySelector('.ql-editor')?.innerHTML || ''
     };
+    const theme = essayInfo.enunciado.split(' ').slice(0, 5).join(' '); // Tema baseado nas primeiras 5 palavras
 
     const aiPrompt = `
         Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica:
         - **Estrutura**: Introdução (apresente o tema e sua tese), Desenvolvimento (2 parágrafos com argumentos claros e exemplos reais), Conclusão (resuma e sugira uma solução ou reflexão).
-        - **Estilo**: Use linguagem simples, objetiva e fluida, com quebras de texto naturais (pontuação variada: frases curtas e médias misturadas), evitando gírias forçadas, repetições ou vocabulário artificial.
+        - **Estilo**: Use linguagem simples, objetiva e fluida, com pontuação moderada (evite excesso de "!" ou "?", prefira tom neutro).
         - **Gênero textual**: Adapte ao tipo "${essayInfo.generoTextual}".
         - **Critérios**: Siga "${essayInfo.criteriosAvaliacao}".
         - **Tamanho**: Aproximadamente 25-30 linhas, como uma redação típica de vestibular.
@@ -160,8 +169,8 @@ async function generateEssay() {
     const initialScore = await checkAiScore(essayText);
     alert(`[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
 
-    alert('[INFO] Adaptando texto com base de dados humana...');
-    const humanizedText = await adaptFromDatabase(essayText);
+    alert('[INFO] Adaptando texto com base na Wikipedia...');
+    const humanizedText = await adaptFromWikipedia(essayText, theme);
     const finalScore = await checkAiScore(humanizedText);
     alert(`[INFO] Verificação final: ${finalScore}% de chance de ser IA`);
 
