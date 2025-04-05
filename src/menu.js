@@ -1,122 +1,75 @@
-const styles = `
-    .hck-menu {
+(function() {
+    if (document.getElementById('hck-menu')) return;
+
+    const menu = document.createElement('div');
+    menu.id = 'hck-menu';
+    menu.style.cssText = `
         position: fixed;
-        bottom: 10px;
+        top: 20px;
         right: 20px;
-        width: clamp(180px, 25vw, 200px);
-        max-width: 60vw;
-        background: rgba(37, 37, 37, 0.9);
-        color: #fff;
-        border-radius: 12px;
-        padding: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        backdrop-filter: blur(5px);
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
         z-index: 10000;
-        transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.3s ease;
-        transform: translateY(120%);
-        opacity: 0;
-    }
-    .hck-menu.open {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    .hck-menu.closed {
-        width: auto;
-        padding: 4px 12px;
-        background: rgba(48, 48, 48, 0.9);
-        border-radius: 10px;
-        cursor: pointer;
-        transform: translateY(0);
-        opacity: 1;
-        backdrop-filter: blur(5px);
-    }
-    .hck-menu h3 {
-        margin: 0 0 8px;
-        font-size: clamp(15px, 4vw, 18px);
+        font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', sans-serif;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 200px;
+    `;
+
+    const title = document.createElement('div');
+    title.textContent = 'HCK REDAÇÃO';
+    title.style.cssText = `
+        font-size: 16px;
+        font-weight: 600;
+        color: #000;
         text-align: center;
-        color: #fff;
-        font-weight: 700;
-        background: linear-gradient(90deg, #ff4444, #ff6666);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: 1.5px;
-        font-family: 'Inter', Arial, sans-serif;
-    }
-    .hck-menu button {
-        width: 100%;
-        padding: 6px;
-        margin: 3px 0;
-        background: rgba(64, 64, 64, 0.9);
-        border: none;
-        border-radius: 6px;
-        color: #fff;
-        font-size: clamp(11px, 3vw, 13px);
-        cursor: pointer;
-        transition: background 0.2s ease;
-        font-family: 'Inter', Arial, sans-serif;
-    }
-    .hck-menu button:hover {
-        background: rgba(80, 80, 80, 0.9);
-    }
-    .hck-icon {
-        font-size: clamp(13px, 3.5vw, 15px);
-        color: #fff;
-        font-weight: 500;
-        letter-spacing: 1px;
-        font-family: 'Inter', Arial, sans-serif;
-    }
-    .hck-credits {
-        margin-top: 8px;
-        font-size: clamp(12px, 2.5vw, 14px);
-        text-align: center;
-        color: #fff;
-        background: linear-gradient(90deg, #ff4444, #ff6666);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: bold;
-        font-family: 'Inter', Arial, sans-serif;
-    }
-    @media (max-width: 768px) {
-        .hck-menu {
-            bottom: 5px;
-            right: 10px;
-            width: clamp(160px, 30vw, 180px);
-        }
-    }
-`;
+        margin-bottom: 5px;
+    `;
+    menu.appendChild(title);
 
-const menu = document.createElement('div');
-menu.className = 'hck-menu closed';
-menu.innerHTML = `<span class="hck-icon">HCK REDAÇÃO</span>`;
+    const buttons = [
+        { text: 'Gerar', action: 'generateEssay' },
+        { text: 'Limpar Tudo', action: 'clearAll' },
+        { text: 'Limpar Título', action: 'clearTitle' },
+        { text: 'Limpar Texto', action: 'clearText' }
+    ];
 
-const styleSheet = document.createElement('style');
-styleSheet.textContent = styles;
-document.head.appendChild(styleSheet);
-
-document.body.appendChild(menu);
-
-function toggleMenu() {
-    if (menu.classList.contains('closed')) {
-        menu.classList.remove('closed');
-        menu.classList.add('open');
-        menu.innerHTML = `
-            <h3>HCK REDAÇÃO v5</h3>
-            <button onclick="window.generateEssay()">Gerar</button>
-            <button onclick="window.clearFields()">Limpar</button>
-            <button onclick="toggleMenu()">Fechar</button>
-            <div class="hck-credits">by Hackermoon</div>
+    buttons.forEach(btn => {
+        const button = document.createElement('button');
+        button.textContent = btn.text;
+        button.style.cssText = `
+            background: #007AFF;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
         `;
-    } else {
-        menu.classList.remove('open');
-        menu.classList.add('closed');
-        menu.innerHTML = `<span class="hck-icon">HCK REDAÇÃO</span>`;
-    }
-}
+        button.onmouseover = () => button.style.background = '#005BB5';
+        button.onmouseout = () => button.style.background = '#007AFF';
+        button.onmousedown = () => button.style.transform = 'scale(0.95)';
+        button.onmouseup = () => button.style.transform = 'scale(1)';
+        button.onclick = () => window[btn.action]();
+        menu.appendChild(button);
+    });
 
-menu.addEventListener('click', (e) => {
-    if (menu.classList.contains('closed') && e.target.className === 'hck-icon') {
-        toggleMenu();
-    }
-});
+    document.body.appendChild(menu);
+
+    const style = document.createElement('style');
+    style.textContent = `
+        button:hover {
+            background: #005BB5 !important;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+    `;
+    document.head.appendChild(style);
+})();
