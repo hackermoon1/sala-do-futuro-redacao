@@ -3,7 +3,97 @@ const config = {
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
     UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743857607/menu.js',
-    TEMPERATURE: 0.85
+    TEMPERATURE: 0.7
+};
+
+const HUMAN_WRITER_PRO = {
+    API_SETTINGS: {
+        TEMPERATURE: 0.7,
+        TOP_P: 0.85,
+        MAX_TOKENS: 2800
+    },
+
+    generatePrompt: (essayInfo) => {
+        return `
+        Escreva uma redação ENEM com estas características HUMANAS:
+
+        ▼▼ ESTRUTURA COMPROVADA ▼▼
+        1) INTRODUÇÃO (5-6 linhas):
+           - [Contexto atual] + [Dado da coletânea ou "pesquisas mostram"]
+           - [Tese clara] sem "É necessário"
+           - [Encaminhamento] com "Para entender..." ou "Analisando..."
+
+        2) DESENVOLVIMENTO (2 parágrafos de 8-10 linhas):
+           • Parágrafo 1:
+             - [Argumento principal] (ex.: "O conhecimento científico ajuda a entender fenômenos")  
+             - [Exemplo VEROSSÍMIL]  
+             - [Comparação] com outro contexto  
+             - [Análise] com "Isso demonstra que..."  
+
+           • Parágrafo 2:
+             - [Contraponto] ou [Complemento]  
+             - [Causa/consequência] + [Dado aproximado]  
+             - [Síntese] com "Portanto,..."
+
+        3) CONCLUSÃO (5 linhas):
+           - [Retomada da tese] sem repetir  
+           - [Proposta CONCRETA] com agente (Ministério da Educação, escolas...)  
+           - [Final memorável] com analogia simples
+
+        ▼▼ TÉCNICAS DE HUMANIZAÇÃO ▼▼
+        • Variação de frases:
+          - 70% médias (12-20 palavras)
+          - 20% curtas (≤8 palavras)
+          - 10% longas (21-25 palavras)
+
+        • Pontuação natural:
+          - 1 vírgula por frase (no máximo)
+          - 1 ponto-e-vírgula a cada 2 parágrafos
+          - Zero travessões/parentêses
+
+        • Vocabulário:
+          - 3 sinônimos para termos-chave
+          - 1 termo técnico explicado entre vírgulas
+          - Expressões formais ("Em outras palavras")
+
+        ▼▼ REGRAS DE OURO ▼▼
+        × Nada de "É notório que" ou "Vide"
+        × Máximo 1 citação indireta
+        × Dados só da coletânea ou "estudos indicam"
+        × Proposta com agente + ação + detalhe
+
+        ▼▼ REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
+        - Use linguagem simples, objetiva e formal, como uma redação escolar.
+        - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
+        - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
+        - Use pontuação moderada: menos pontos finais, mais frases compostas com conjunções ("e", "mas", "porque"), apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
+        - Evite repetições de palavras ou ideias.
+        - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
+        - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
+        - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
+        - **Gênero textual**: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
+        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
+        - **Tamanho**: 28-32 linhas, com 1700 a 3080 caracteres (média de 2400 caracteres, considerando 60-70 caracteres por linha).
+        - **Base**: "${essayInfo.coletanea.substring(0, 150)}..."
+        - **Tema**: "${essayInfo.enunciado.split(' ').slice(0, 5).join(' ')}"
+
+        Formato:
+        TÍTULO: [3-4 palavras em maiúsculas]
+        TEXTO: [28-32 linhas, 1700-3080 caracteres, média de 2400]
+        `;
+    },
+
+    humanizeText: async (text) => {
+        const fixes = {
+            "É necessário": "Requer-se",
+            "Por exemplo": "Como visto em",
+            "Além disso": "Ademais",
+            "No entanto": "Contudo"
+        };
+        
+        return Object.entries(fixes).reduce((str, [from, to]) => 
+            str.replace(new RegExp(from, 'g'), to), text);
+    }
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
@@ -47,7 +137,11 @@ async function getAiResponse(prompt, modelIndex = 0) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: config.TEMPERATURE, topP: 0.9, maxOutputTokens: 8192 }
+                generationConfig: { 
+                    temperature: HUMAN_WRITER_PRO.API_SETTINGS.TEMPERATURE, 
+                    topP: HUMAN_WRITER_PRO.API_SETTINGS.TOP_P, 
+                    maxOutputTokens: HUMAN_WRITER_PRO.API_SETTINGS.MAX_TOKENS 
+                }
             })
         });
         if (!response.ok) throw new Error('Erro na API');
@@ -89,79 +183,22 @@ function showNotification(message, progress) {
 }
 
 async function generateAndAdaptEssay(theme, essayInfo) {
-    const generationPrompt = `
-        Você é um estudante brasileiro escrevendo uma redação escolar com marcas sutis de escrita humana, seguindo este processo:
-
-        ▼▼ 1. DECODIFICAÇÃO DA COLETÂNEA ▼▼
-        • Extraia o CONFLITO CENTRAL (ex.: "acesso ao conhecimento vs. desinformação").
-        • Identifique 2 TERMOS-CHAVE (ex.: "conhecimento científico", "educação").
-        • Selecione 1 DADO USÁVEL (se existir) ou use um dado aproximado (ex.: "cerca de 70%").
-
-        ▼▼ 2. ESTRUTURA ADAPTÁTICA ▼▼
-        • **Introdução** (3 frases):
-          - [CENA CONCRETA] + [PARADOXO] + [TESE]  
-            Ex.: "Enquanto escolas urbanas ensinam ciência, comunidades rurais não têm acesso. Essa contradição expõe um desafio. A educação científica precisa alcançar todos."
-        • **Desenvolvimento** (2 blocos, 12-15 linhas cada para atingir 2400 caracteres):
-          - **Bloco 1**:  
-            - [Argumento principal] (ex.: "O conhecimento científico ajuda a entender fenômenos").  
-            - [Exemplo da coletânea adaptado, genérico] (ex.: "Em regiões isoladas, o acesso à ciência é limitado").  
-            - [Comparação com sistema internacional] (ex.: "Diferente de países com sistemas educacionais avançados...").  
-            - [Análise adicional para maior profundidade, com ênfase em como a ciência explica fenômenos].  
-          - **Bloco 2**:  
-            - [Virada argumentativa] ("O problema, porém, vai além...").  
-            - [Causa profunda] + [Efeito dominó] (ex.: "A falta de professores leva à desinformação, que se espalha rapidamente").  
-            - [Dado arredondado] (se aplicável).  
-            - [Reflexão para expandir o argumento, destacando as características da ciência].  
-        • **Conclusão** (3 elementos, 5-6 linhas):  
-          - [Agente específico] (ex.: "O Ministério da Educação").  
-          - [Ação viável] (ex.: "criar programas de ensino itinerante").  
-          - [Imagem final] (ex.: "como formigas que carregam folhas juntas").
-          - [Conclusão baseada em evidências].
-
-        ▼▼ 3. TÉCNICAS DE HUMANIZAÇÃO ▼▼
-        • **Ritmo**:  
-          - Reduza frases ultra-curtas para 1 a cada 5 normais (menos pontuação).  
-          - Use mais frases compostas com conjunções (ex.: "e", "mas", "porque") para fluidez.  
-        • **Pontuação Invisível**:  
-          - Máximo 1 vírgula por frase (exceto listas).  
-          - 1 ponto-e-vírgula a cada 15 frases.  
-          - Zero travessões/parentêses.  
-        • **Linguagem**:  
-          - 3 níveis de formalidade:  
-            - Técnico (1 termo por parágrafo, ex.: "método científico").  
-            - Jornalístico (80% do texto, ex.: "A sociedade enfrenta desafios").  
-            - Coloquial controlado (1 expressão formal, ex.: "em outras palavras").
-
-        ▼▼ 4. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
-        - Use linguagem simples, objetiva e formal, como uma redação escolar.
-        - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
-        - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
-        - Use pontuação moderada: menos pontos finais, mais frases compostas, apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
-        - Evite repetições de palavras ou ideias.
-        - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
-        - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
-        - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
-        - **Gênero textual**: "${essayInfo.generoTextual}".
-        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-        - **Tamanho**: 35-45 linhas, com 1700 a 3080 caracteres (média de 2400 caracteres, considerando 60-70 caracteres por linha).
-        - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
-
-        Formato da resposta:
-        TITULO: [Frase nominal de 3-4 palavras, sem verbo]
-        TEXTO: [Redação completa, sem tags HTML, com 1700 a 3080 caracteres, média de 2400]
-    `;
-
+    const prompt = HUMAN_WRITER_PRO.generatePrompt(essayInfo);
     showNotification('Gerando redação', 20);
-    const aiResponse = await getAiResponse(generationPrompt);
-    if (!aiResponse.includes('TITULO:') || !aiResponse.includes('TEXTO:')) {
+    let essay = await getAiResponse(prompt);
+    
+    if (!essay.includes('TÍTULO:') || !essay.includes('TEXTO:')) {
         showNotification('Erro no formato', 0);
         throw new Error('Formato inválido');
     }
 
-    const essayTitle = aiResponse.split('TITULO:')[1].split('TEXTO:')[0].trim();
-    let essayText = aiResponse.split('TEXTO:')[1].trim();
+    const essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
+    let essayText = essay.split('TEXTO:')[1].trim();
 
-    // Verificar e ajustar o tamanho do texto
+    // Pós-processamento
+    essayText = await HUMAN_WRITER_PRO.humanizeText(essayText);
+
+    // Verificação de tamanho
     if (essayText.length < 1700) {
         const additionalPrompt = `
             Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
@@ -169,34 +206,10 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         `;
         essayText = await getAiResponse(additionalPrompt);
     } else if (essayText.length > 3080) {
-        const trimPrompt = `
-            Reduza o texto abaixo para no máximo 3080 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
-            Texto: "${essayText}"
-        `;
-        essayText = await getAiResponse(trimPrompt);
+        essayText = essayText.substring(0, 3080).replace(/\s+\S*$/, '');
     }
 
-    const adaptationPrompt = `
-        Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro, corrigindo falhas de IA:
-        - Mantenha o conteúdo e o significado original.
-        - Use tom formal e objetivo, sem opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
-        - Use palavras simples e comuns, sem gírias (ex.: "legal", "pra", "né") ou termos complexos (ex.: "paradigma").
-        - Corrija sintaxe: use "para" em vez de "pra", "as pessoas" em vez de "a gente", evite tom conversacional (ex.: "virar esse jogo").
-        - Reduza a pontuação: menos pontos finais, mais frases compostas com conjunções ("e", "mas", "porque"), remova "!" ou "?", garanta quebras de linha após cada ideia completa.
-        - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
-        - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
-        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
-        - **Ritmo**: 1 frase ultra-curta (≤8 palavras) a cada 5 normais, mais frases compostas.
-        - **Pontuação**: Máximo 1 vírgula por frase (exceto listas), 1 ponto-e-vírgula a cada 15 frases, zero travessões/parentêses.
-        - **Linguagem**: 1 termo técnico por parágrafo, 80% jornalístico, 1 expressão formal (ex.: "em outras palavras").
-        - **Tamanho**: Garanta que o texto tenha entre 1700 e 3080 caracteres, com média de 2400.
-        Texto para adaptar: "${essayText}"
-    `;
-
-    showNotification('Adaptando texto', 50);
-    const humanizedText = await getAiResponse(adaptationPrompt);
-
-    return { title: essayTitle, text: humanizedText };
+    return { title: essayTitle, text: essayText };
 }
 
 async function checkAiScore(text) {
