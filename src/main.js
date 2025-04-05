@@ -2,7 +2,7 @@ const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743856199/menu.js',
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743856976/menu.js',
     TEMPERATURE: 0.85
 };
 
@@ -67,18 +67,18 @@ function showNotification(message, progress) {
         notification.className = 'hck-notification';
         notification.style.cssText = `
             position: fixed;
-            bottom: 60px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            color: #000;
+            background: rgba(37, 37, 37, 0.9);
+            color: #fff;
             padding: 10px 20px;
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
             z-index: 10001;
             font-size: 14px;
-            font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', sans-serif;
+            font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
             transition: opacity 0.3s ease;
         `;
         document.body.appendChild(notification);
@@ -101,16 +101,18 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         • **Introdução** (3 frases):
           - [CENA CONCRETA] + [PARADOXO] + [TESE]  
             Ex.: "Enquanto escolas urbanas ensinam ciência, comunidades rurais não têm acesso. Essa contradição expõe um desafio. A educação científica precisa alcançar todos."
-        • **Desenvolvimento** (2 blocos):
+        • **Desenvolvimento** (2 blocos, 10-12 linhas cada para garantir 1700+ caracteres):
           - **Bloco 1**:  
             - [Argumento principal]  
             - [Exemplo da coletânea adaptado, genérico] (ex.: "Em regiões isoladas, o acesso à ciência é limitado").  
             - [Comparação com sistema internacional] (ex.: "Diferente de países com sistemas educacionais avançados...").  
+            - [Análise adicional para maior profundidade].  
           - **Bloco 2**:  
             - [Virada argumentativa] ("O problema, porém, vai além...").  
             - [Causa profunda] + [Efeito dominó] (ex.: "A falta de professores leva à desinformação, que se espalha rapidamente").  
             - [Dado arredondado] (se aplicável).  
-        • **Conclusão** (3 elementos):  
+            - [Reflexão para expandir o argumento].  
+        • **Conclusão** (3 elementos, 4-5 linhas):  
           - [Agente específico] (ex.: "O Ministério da Educação").  
           - [Ação viável] (ex.: "criar programas de ensino itinerante").  
           - [Imagem final] (ex.: "como formigas que carregam folhas juntas").
@@ -140,12 +142,12 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - **Gênero textual**: "${essayInfo.generoTextual}".
         - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-        - **Tamanho**: 25-30 linhas.
+        - **Tamanho**: 25-30 linhas, com no mínimo 1700 caracteres (considerando 60-70 caracteres por linha).
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
         TITULO: [Frase nominal de 3-4 palavras, sem verbo]
-        TEXTO: [Redação completa, sem tags HTML]
+        TEXTO: [Redação completa, sem tags HTML, com no mínimo 1700 caracteres]
     `;
 
     showNotification('Gerando redação', 20);
@@ -156,7 +158,16 @@ async function generateAndAdaptEssay(theme, essayInfo) {
     }
 
     const essayTitle = aiResponse.split('TITULO:')[1].split('TEXTO:')[0].trim();
-    const essayText = aiResponse.split('TEXTO:')[1].trim();
+    let essayText = aiResponse.split('TEXTO:')[1].trim();
+
+    // Verificar se o texto tem pelo menos 1700 caracteres
+    if (essayText.length < 1700) {
+        const additionalPrompt = `
+            Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
+            Texto: "${essayText}"
+        `;
+        essayText = await getAiResponse(additionalPrompt);
+    }
 
     const adaptationPrompt = `
         Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro, corrigindo falhas de IA:
@@ -171,6 +182,7 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - **Ritmo**: 1 frase ultra-curta (≤8 palavras) a cada 3 normais, variação entre períodos simples e compostos.
         - **Pontuação**: Máximo 1 vírgula por frase (exceto listas), 1 ponto-e-vírgula a cada 15 frases, zero travessões/parentêses.
         - **Linguagem**: 1 termo técnico por parágrafo, 80% jornalístico, 1 expressão formal (ex.: "em outras palavras").
+        - **Tamanho**: Garanta que o texto tenha no mínimo 1700 caracteres.
         Texto para adaptar: "${essayText}"
     `;
 
