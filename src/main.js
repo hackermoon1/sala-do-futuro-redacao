@@ -3,10 +3,7 @@ const config = {
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
     UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743847525/menu.js',
-    TEMPERATURE: 0.9,
-    WIKIPEDIA_API: 'https://en.wikipedia.org/w/api.php',
-    OPEN_LIBRARY_API: 'https://openlibrary.org/api/books',
-    GUTENBERG_API: 'https://gutendex.com/books'
+    TEMPERATURE: 0.85
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
@@ -64,70 +61,60 @@ async function getAiResponse(prompt, modelIndex = 0) {
     }
 }
 
-async function fetchHumanText(theme) {
-    const apis = [
-        async () => {
-            const url = `${config.WIKIPEDIA_API}?action=query&list=search&srsearch=${encodeURIComponent(theme)}&format=json&origin=*`;
-            const response = await fetch(url);
-            const data = await response.json();
-            const topResult = data.query.search[0]?.title;
-            if (!topResult) throw new Error('Sem resultado');
-            const contentUrl = `${config.WIKIPEDIA_API}?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topResult)}&format=json&origin=*`;
-            const contentResponse = await fetch(contentUrl);
-            const contentData = await contentResponse.json();
-            return Object.values(contentData.query.pages)[0].extract;
-        },
-        async () => {
-            const url = `${config.OPEN_LIBRARY_API}?bibkeys=ISBN:${Math.floor(Math.random() * 1000000000)}&format=json&jscmd=data`;
-            const response = await fetch(url);
-            const data = await response.json();
-            const book = Object.values(data)[0];
-            return book?.preview_text || book?.title || "Texto padrão de livro.";
-        },
-        async () => {
-            const url = `${config.GUTENBERG_API}?search=${encodeURIComponent(theme)}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            return data.results[0]?.title || "Texto clássico em domínio público.";
-        }
-    ];
+async function generateAndAdaptEssay(theme, essayInfo) {
+    const generationPrompt = `
+        Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica:
+        - **Estrutura**: Introdução (tema e tese), Desenvolvimento (2 parágrafos com argumentos claros e exemplos concretos), Conclusão (resumo e solução/reflexão).
+        - **Estilo**: 
+          - Use linguagem simples, objetiva e fluida, como um estudante real.
+          - Inclua visão pessoal (ex.: "Eu vejo que...") e exemplos reais (ex.: "Na minha cidade...").
+          - Use pontuação moderada: misture frases curtas e médias, evite "!" ou "?" excessivos, prefira pausas naturais com "." e ",".
+          - Evite erros de IA: sem repetições (ex.: "Além disso" várias vezes), frases longas demais, vocabulário artificial ou generalizações vagas.
+        - **Gênero textual**: "${essayInfo.generoTextual}".
+        - **Critérios**: "${essayInfo.criteriosAvaliacao}".
+        - **Tamanho**: 25-30 linhas, como redação de vestibular.
+        - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
-    for (const api of apis) {
-        try {
-            const text = await api();
-            if (text && text.length > 50) {
-                alert(`HCK REDAÇÃO\n[INFO] Texto obtido de ${api.name || 'fonte externa'}`);
-                return text;
-            }
-        } catch (error) {
-            console.log(`Falha em uma API: ${error.message}`);
-        }
+        Formato da resposta:
+        TITULO: [Título curto, até 8 palavras, resumindo o tema]
+        TEXTO: [Redação completa]
+    `;
+
+    alert('HCK REDAÇÃO\n[INFO] Gerando redação com IA...');
+    const aiResponse = await getAiResponse(generationPrompt);
+    if (!aiResponse.includes('TITULO:') || !aiResponse.includes('TEXTO:')) {
+        alert('HCK REDAÇÃO\n[ERROR] Formato inválido da resposta da IA');
+        throw new Error('Formato inválido');
     }
-    alert('HCK REDAÇÃO\n[INFO] Nenhuma API respondeu, usando exemplo padrão');
-    return "A educação é essencial. Muitas escolas têm poucos recursos. Isso afeta o futuro.";
-}
 
-async function adaptText(text, theme) {
-    const humanText = await fetchHumanText(theme);
-    alert('HCK REDAÇÃO\n[INFO] Adaptando texto com base em fonte humana...');
-    return await getAiResponse(`
-        Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro:
-        - Mantenha o conteúdo e o significado original
-        - Use um tom natural, claro e fluido, com pontuação moderada (evite excesso de "!" ou "?")
-        - Traduza ou ajuste para português brasileiro, se necessário
-        - Evite padrões de IA como frases longas, repetições ou vocabulário artificial
-        Exemplo de escrita humana: "${humanText}"
-        Texto para adaptar: "${text}"
-    `);
+    const essayTitle = aiResponse.split('TITULO:')[1].split('TEXTO:')[0].trim();
+    const essayText = aiResponse.split('TEXTO:')[1].trim();
+
+    const adaptationPrompt = `
+        Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro, corrigindo falhas de IA:
+        - Mantenha o conteúdo e o significado original.
+        - Use tom natural, com visão pessoal e exemplos concretos.
+        - Corrija pontuação: evite "!" ou "?" excessivos, use "." e "," para pausas naturais, misture frases curtas e médias.
+        - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
+        Texto para adaptar: "${essayText}"
+    `;
+
+    alert('HCK REDAÇÃO\n[INFO] Adaptando texto para escrita humana...');
+    const humanizedText = await getAiResponse(adaptationPrompt);
+
+    return { title: essayTitle, text: humanizedText };
 }
 
 async function checkAiScore(text) {
     alert('HCK REDAÇÃO\n[INFO] Verificando autenticidade...');
     const detectorPrompt = `
-        Analise o texto abaixo e estime a probabilidade (em porcentagem) de ele ter sido escrito por IA:
-        - Considere padrões como frases longas e uniformes, repetições ou vocabulário artificial como sinais de IA
-        - Compare com escrita humana natural, com pontuação moderada e tom fluido
-        - Retorne apenas um número entre 0 e 100, onde 0 é totalmente humano e 100 é totalmente IA
+        Analise o texto abaixo e estime a probabilidade (em %) de ser IA, com base nestas categorias:
+        - **Repetições**: Uso excessivo de palavras ou frases (ex.: "Além disso" várias vezes).
+        - **Pontuação**: Excesso de "!" ou "?", vírgulas ilógicas, falta de pausas naturais.
+        - **Estrutura**: Frases longas e uniformes, transições forçadas ou vagas.
+        - **Conteúdo**: Generalizações sem exemplos concretos ou visão pessoal.
+        - **Plágio**: Similaridade com textos conhecidos de IA (ex.: estilo robótico).
+        - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
     const score = await getAiResponse(detectorPrompt);
@@ -162,45 +149,17 @@ async function generateEssay() {
     };
     const theme = essayInfo.enunciado.split(' ').slice(0, 5).join(' ');
 
-    const aiPrompt = `
-        Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica:
-        - **Estrutura**: Introdução (apresente o tema e sua tese), Desenvolvimento (2 parágrafos com argumentos claros e exemplos reais), Conclusão (resuma e sugira uma solução ou reflexão).
-        - **Estilo**: Use linguagem simples, objetiva e fluida, com pontuação moderada (evite excesso de "!" ou "?", prefira tom neutro).
-        - **Gênero textual**: Adapte ao tipo "${essayInfo.generoTextual}".
-        - **Critérios**: Siga "${essayInfo.criteriosAvaliacao}".
-        - **Tamanho**: Aproximadamente 25-30 linhas, como uma redação típica de vestibular.
-        - **Base**: Use "${essayInfo.coletanea}" e "${essayInfo.enunciado}" para embasar os argumentos.
+    const { title, text } = await generateAndAdaptEssay(theme, essayInfo);
 
-        Formato da resposta:
-        TITULO: [Título criativo e relacionado ao tema]
-        TEXTO: [Redação completa]
-    `;
-
-    alert('HCK REDAÇÃO\n[INFO] Gerando redação com IA...');
-    let aiResponse;
-    try {
-        aiResponse = await getAiResponse(aiPrompt);
-    } catch (error) {
-        return;
-    }
-    if (!aiResponse.includes('TITULO:') || !aiResponse.includes('TEXTO:')) {
-        alert('HCK REDAÇÃO\n[ERROR] Formato inválido da resposta da IA');
-        return;
-    }
-
-    const essayTitle = aiResponse.split('TITULO:')[1].split('TEXTO:')[0].trim();
-    let essayText = aiResponse.split('TEXTO:')[1].trim();
-
-    const initialScore = await checkAiScore(essayText);
+    const initialScore = await checkAiScore(text);
     alert(`HCK REDAÇÃO\n[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
 
-    const humanizedText = await adaptText(essayText, theme);
-    const finalScore = await checkAiScore(humanizedText);
+    const finalScore = await checkAiScore(text);
     alert(`HCK REDAÇÃO\n[INFO] Verificação final: ${finalScore}% de chance de ser IA`);
 
     alert('HCK REDAÇÃO\n[INFO] Inserindo título...');
     const firstTextarea = document.querySelector('textarea')?.parentElement;
-    if (!firstTextarea || !await hackMUITextarea(firstTextarea, essayTitle)) {
+    if (!firstTextarea || !await hackMUITextarea(firstTextarea, title)) {
         alert('HCK REDAÇÃO\n[ERROR] Falha ao inserir título');
         return;
     }
@@ -208,7 +167,7 @@ async function generateEssay() {
     alert('HCK REDAÇÃO\n[INFO] Inserindo texto...');
     const allTextareas = document.querySelectorAll('textarea');
     const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
-    if (!lastTextarea || !await hackMUITextarea(lastTextarea, humanizedText)) {
+    if (!lastTextarea || !await hackMUITextarea(lastTextarea, text)) {
         alert('HCK REDAÇÃO\n[ERROR] Falha ao inserir texto');
         return;
     }
