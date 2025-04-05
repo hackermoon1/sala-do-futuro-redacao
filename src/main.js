@@ -2,12 +2,12 @@ const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743856976/menu.js',
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743857607/menu.js',
     TEMPERATURE: 0.85
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
-    const textarea = textareaElement.querySelector('textarea');
+    const textarea = textareaElement?.querySelector('textarea');
     if (!textarea) return false;
 
     const methods = [
@@ -101,26 +101,27 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         • **Introdução** (3 frases):
           - [CENA CONCRETA] + [PARADOXO] + [TESE]  
             Ex.: "Enquanto escolas urbanas ensinam ciência, comunidades rurais não têm acesso. Essa contradição expõe um desafio. A educação científica precisa alcançar todos."
-        • **Desenvolvimento** (2 blocos, 10-12 linhas cada para garantir 1700+ caracteres):
+        • **Desenvolvimento** (2 blocos, 12-15 linhas cada para atingir 2400 caracteres):
           - **Bloco 1**:  
-            - [Argumento principal]  
+            - [Argumento principal] (ex.: "O conhecimento científico ajuda a entender fenômenos").  
             - [Exemplo da coletânea adaptado, genérico] (ex.: "Em regiões isoladas, o acesso à ciência é limitado").  
             - [Comparação com sistema internacional] (ex.: "Diferente de países com sistemas educacionais avançados...").  
-            - [Análise adicional para maior profundidade].  
+            - [Análise adicional para maior profundidade, com ênfase em como a ciência explica fenômenos].  
           - **Bloco 2**:  
             - [Virada argumentativa] ("O problema, porém, vai além...").  
             - [Causa profunda] + [Efeito dominó] (ex.: "A falta de professores leva à desinformação, que se espalha rapidamente").  
             - [Dado arredondado] (se aplicável).  
-            - [Reflexão para expandir o argumento].  
-        • **Conclusão** (3 elementos, 4-5 linhas):  
+            - [Reflexão para expandir o argumento, destacando as características da ciência].  
+        • **Conclusão** (3 elementos, 5-6 linhas):  
           - [Agente específico] (ex.: "O Ministério da Educação").  
           - [Ação viável] (ex.: "criar programas de ensino itinerante").  
           - [Imagem final] (ex.: "como formigas que carregam folhas juntas").
+          - [Conclusão baseada em evidências].
 
         ▼▼ 3. TÉCNICAS DE HUMANIZAÇÃO ▼▼
         • **Ritmo**:  
-          - 1 frase ultra-curta (≤8 palavras) a cada 3 normais (ex.: "Desinformação cresce.").  
-          - Variação entre períodos simples e compostos.  
+          - Reduza frases ultra-curtas para 1 a cada 5 normais (menos pontuação).  
+          - Use mais frases compostas com conjunções (ex.: "e", "mas", "porque") para fluidez.  
         • **Pontuação Invisível**:  
           - Máximo 1 vírgula por frase (exceto listas).  
           - 1 ponto-e-vírgula a cada 15 frases.  
@@ -135,19 +136,19 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - Use linguagem simples, objetiva e formal, como uma redação escolar.
         - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
         - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
-        - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
+        - Use pontuação moderada: menos pontos finais, mais frases compostas, apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
         - Evite repetições de palavras ou ideias.
         - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
         - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
         - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - **Gênero textual**: "${essayInfo.generoTextual}".
         - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-        - **Tamanho**: 25-30 linhas, com no mínimo 1700 caracteres (considerando 60-70 caracteres por linha).
+        - **Tamanho**: 35-45 linhas, com 1700 a 3080 caracteres (média de 2400 caracteres, considerando 60-70 caracteres por linha).
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
         TITULO: [Frase nominal de 3-4 palavras, sem verbo]
-        TEXTO: [Redação completa, sem tags HTML, com no mínimo 1700 caracteres]
+        TEXTO: [Redação completa, sem tags HTML, com 1700 a 3080 caracteres, média de 2400]
     `;
 
     showNotification('Gerando redação', 20);
@@ -160,13 +161,19 @@ async function generateAndAdaptEssay(theme, essayInfo) {
     const essayTitle = aiResponse.split('TITULO:')[1].split('TEXTO:')[0].trim();
     let essayText = aiResponse.split('TEXTO:')[1].trim();
 
-    // Verificar se o texto tem pelo menos 1700 caracteres
+    // Verificar e ajustar o tamanho do texto
     if (essayText.length < 1700) {
         const additionalPrompt = `
             Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
             Texto: "${essayText}"
         `;
         essayText = await getAiResponse(additionalPrompt);
+    } else if (essayText.length > 3080) {
+        const trimPrompt = `
+            Reduza o texto abaixo para no máximo 3080 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
+            Texto: "${essayText}"
+        `;
+        essayText = await getAiResponse(trimPrompt);
     }
 
     const adaptationPrompt = `
@@ -175,14 +182,14 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - Use tom formal e objetivo, sem opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - Use palavras simples e comuns, sem gírias (ex.: "legal", "pra", "né") ou termos complexos (ex.: "paradigma").
         - Corrija sintaxe: use "para" em vez de "pra", "as pessoas" em vez de "a gente", evite tom conversacional (ex.: "virar esse jogo").
-        - Corrija pontuação: use apenas "." e "," adequadamente, remova "!" ou "?", garanta quebras de linha após cada ideia completa.
+        - Reduza a pontuação: menos pontos finais, mais frases compostas com conjunções ("e", "mas", "porque"), remova "!" ou "?", garanta quebras de linha após cada ideia completa.
         - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
         - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
         - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
-        - **Ritmo**: 1 frase ultra-curta (≤8 palavras) a cada 3 normais, variação entre períodos simples e compostos.
+        - **Ritmo**: 1 frase ultra-curta (≤8 palavras) a cada 5 normais, mais frases compostas.
         - **Pontuação**: Máximo 1 vírgula por frase (exceto listas), 1 ponto-e-vírgula a cada 15 frases, zero travessões/parentêses.
         - **Linguagem**: 1 termo técnico por parágrafo, 80% jornalístico, 1 expressão formal (ex.: "em outras palavras").
-        - **Tamanho**: Garanta que o texto tenha no mínimo 1700 caracteres.
+        - **Tamanho**: Garanta que o texto tenha entre 1700 e 3080 caracteres, com média de 2400.
         Texto para adaptar: "${essayText}"
     `;
 
@@ -214,35 +221,57 @@ async function checkAiScore(text) {
 
 async function clearTitle() {
     showNotification('Limpando título', 10);
-    const firstTextarea = document.querySelector('textarea');
-    if (firstTextarea) {
-        const titleContainer = firstTextarea.parentElement;
-        await hackMUITextarea(titleContainer, '');
+    const allTextareas = document.querySelectorAll('textarea');
+    if (allTextareas.length === 0) {
+        showNotification('Nenhum campo de título encontrado', 0);
+        return;
     }
-    showNotification('Título limpo', 100);
+    const firstTextarea = allTextareas[0]?.parentElement;
+    if (firstTextarea && await hackMUITextarea(firstTextarea, '')) {
+        showNotification('Título limpo', 100);
+    } else {
+        showNotification('Erro ao limpar título', 0);
+    }
 }
 
 async function clearText() {
     showNotification('Limpando texto', 10);
     const allTextareas = document.querySelectorAll('textarea');
-    const lastTextarea = allTextareas[allTextareas.length - 1];
-    if (lastTextarea) {
-        const textContainer = lastTextarea.parentElement;
-        await hackMUITextarea(textContainer, '');
+    if (allTextareas.length < 2) {
+        showNotification('Nenhum campo de texto encontrado', 0);
+        return;
     }
-    showNotification('Texto limpo', 100);
+    const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
+    if (lastTextarea && await hackMUITextarea(lastTextarea, '')) {
+        showNotification('Texto limpo', 100);
+    } else {
+        showNotification('Erro ao limpar texto', 0);
+    }
 }
 
 async function clearAll() {
     showNotification('Limpando tudo', 10);
     const allTextareas = document.querySelectorAll('textarea');
-    if (allTextareas.length > 0) {
-        const firstTextarea = allTextareas[0].parentElement;
-        await hackMUITextarea(firstTextarea, '');
-        const lastTextarea = allTextareas[allTextareas.length - 1].parentElement;
-        await hackMUITextarea(lastTextarea, '');
+    if (allTextareas.length === 0) {
+        showNotification('Nenhum campo encontrado', 0);
+        return;
     }
-    showNotification('Tudo limpo', 100);
+    let success = true;
+    const firstTextarea = allTextareas[0]?.parentElement;
+    if (firstTextarea) {
+        success = success && await hackMUITextarea(firstTextarea, '');
+    }
+    if (allTextareas.length > 1) {
+        const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
+        if (lastTextarea) {
+            success = success && await hackMUITextarea(lastTextarea, '');
+        }
+    }
+    if (success) {
+        showNotification('Tudo limpo', 100);
+    } else {
+        showNotification('Erro ao limpar campos', 0);
+    }
 }
 
 async function generateEssay() {
@@ -270,14 +299,18 @@ async function generateEssay() {
     showNotification(`Final: ${finalScore}% IA`, 90);
 
     showNotification('Inserindo título', 95);
-    const firstTextarea = document.querySelector('textarea')?.parentElement;
+    const allTextareas = document.querySelectorAll('textarea');
+    if (allTextareas.length === 0) {
+        showNotification('Nenhum campo de título encontrado', 0);
+        return;
+    }
+    const firstTextarea = allTextareas[0]?.parentElement;
     if (!firstTextarea || !await hackMUITextarea(firstTextarea, title)) {
         showNotification('Erro no título', 0);
         return;
     }
 
     showNotification('Inserindo texto', 98);
-    const allTextareas = document.querySelectorAll('textarea');
     const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
     if (!lastTextarea || !await hackMUITextarea(lastTextarea, text)) {
         showNotification('Erro no texto', 0);
