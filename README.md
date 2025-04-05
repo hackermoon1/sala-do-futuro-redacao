@@ -57,7 +57,7 @@
 
 🔲 Detecção automática de **critérios de correção**  
 🔲 Pré-análise **inteligente da coletânea**  
-🔲 Modo **"emergência" para temas complexos**  
+🔲 Adicionar **banco de dados universal de textos como exemplo** para temas complexos 
 </details>  
 
 ---
