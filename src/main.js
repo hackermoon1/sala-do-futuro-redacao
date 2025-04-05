@@ -5,7 +5,7 @@ const config = {
     'gemini-pro:generateContent'
   ],
   API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-  UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743857607/menu.js',
+  UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743862237/menu.js',
   TEMPERATURE: 0.7
 };
 
@@ -18,71 +18,63 @@ const HUMAN_WRITER_PRO = {
 
   generatePrompt: (essayInfo) => {
     return `
-      Escreva uma redação ENEM com estas características HUMANAS:
+      Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, natural e objetiva. Siga a estrutura e estilo descritos abaixo, priorizando fluidez textual e coesão argumentativa:
 
-      ▼▼ ESTRUTURA COMPROVADA ▼▼
-      1) INTRODUÇÃO (5-6 linhas):
-         - [Contexto atual] + [Dado da coletânea ou "pesquisas mostram"]
-         - [Tese clara] sem "É necessário"
-         - [Encaminhamento] com "Para entender..." ou "Analisando..."
+      ▼ ESTRUTURA ORIENTADORA
 
-      2) DESENVOLVIMENTO (2 parágrafos de 8-10 linhas):
-         • Parágrafo 1:
-           - [Argumento principal] (ex.: "O conhecimento científico ajuda a entender fenômenos")
-           - [Exemplo VEROSSÍMIL]
-           - [Comparação] com outro contexto
-           - [Análise] com "Isso demonstra que..."
+      1. INTRODUÇÃO (5 a 6 linhas):
+      - Contextualize o tema com um recorte atual, histórico ou cultural (dados, citações ou exemplos da coletânea).
+      - Apresente a **tese com clareza**, evitando clichês como "É notório que".
+      - Indique o percurso argumentativo de forma fluida ("Ao considerar..." ou "Nesse contexto...").
 
-         • Parágrafo 2:
-           - [Contraponto] ou [Complemento]
-           - [Causa/consequência] + [Dado aproximado]
-           - [Síntese] com "Portanto,..."
+      2. DESENVOLVIMENTO (2 parágrafos de 8 a 10 linhas cada):
+      - Parágrafo 1:
+        • Desenvolva um argumento central com causa e consequência.
+        • Traga um exemplo relevante e contextualizado (histórico, social, científico ou cultural).
+        • Relacione o exemplo com a tese e finalize com uma análise crítica.
+      - Parágrafo 2:
+        • Apresente um segundo ponto de vista, complementar ou antagônico.
+        • Insira novos dados, estatísticas ou fenômenos sociais.
+        • Conecte com a tese, usando síntese reflexiva ("Isso evidencia que...").
 
-      3) CONCLUSÃO (5 linhas):
-         - [Retomada da tese] sem repetir
-         - [Proposta CONCRETA] com agente (Ministério da Educação, escolas...)
-         - [Final memorável] com analogia simples
+      3. CONCLUSÃO (4 a 5 linhas):
+      - Retome a tese com outras palavras.
+      - Proponha uma **solução completa**: agente, ação, modo de execução, efeito esperado.
+      - Finalize com uma analogia leve, metáfora simples ou frase de impacto suave.
 
-      ▼▼ TÉCNICAS DE HUMANIZAÇÃO ▼▼
-      • Variação de frases:
-        - 70% médias (12-20 palavras)
-        - 20% curtas (≤8 palavras)
-        - 10% longas (21-25 palavras)
+      ▼ ESTILO E LINGUAGEM
 
-      • Pontuação natural:
-        - 1 vírgula por frase (no máximo)
-        - 1 ponto-e-vírgula a cada 2 parágrafos
-        - Zero travessões/parentêses
+      - Fluidez frasal:
+        • 70% frases médias (12-20 palavras)
+        • 20% curtas (até 8 palavras)
+        • 10% longas (21-25), com pontuação precisa
 
-      • Vocabulário:
-        - 3 sinônimos para termos-chave
-        - 1 termo técnico explicado entre vírgulas
-        - Expressões formais ("Em outras palavras")
+      - Vocabulário:
+        • Use palavras claras e bem colocadas — sem termos rebuscados ou gírias
+        • Varie conceitos-chave com sinônimos contextuais (ex.: "educação", "formação", "ensino")
+        • Inclua 1 termo técnico com explicação simples
 
-      ▼▼ REGRAS DE OURO ▼▼
-      × Nada de "É notório que" ou "Vide"
-      × Máximo 1 citação indireta
-      × Dados só da coletânea ou "estudos indicam"
-      × Proposta com agente + ação + detalhe
+      - Pontuação:
+        • Use pontuação natural (vírgulas moderadas, ponto-e-vírgula com critério)
+        • Evite travessões e parênteses
 
-      ▼▼ REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
-      - Use linguagem simples, objetiva e formal, como uma redação escolar.
-      - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
-      - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
-      - Use pontuação moderada: menos pontos finais, mais frases compostas com conjunções ("e", "mas", "porque"), apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
-      - Evite repetições de palavras ou ideias.
-      - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
-      - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
-      - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
-      - **Gênero textual**: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
-      - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-      - **Tamanho**: 28-32 linhas, com 1700 a 3080 caracteres (média de 2400 caracteres, considerando 60-70 caracteres por linha).
-      - **Base**: "${essayInfo.coletanea.substring(0, 150)}..."
-      - **Tema**: "${essayInfo.enunciado.split(' ').slice(0, 5).join(' ')}"
+      ▼ EVITE:
+      × Frases clichês: "É notório que", "Pode-se dizer que", "Na minha escola..."
+      × Exemplos pessoais, gírias ou expressões informais
+      × Repetições de ideias ou termos próximos
+      × Frases artificiais ou muito rebuscadas
 
-      Formato:
-      TÍTULO: [3-4 palavras em maiúsculas]
-      TEXTO: [28-32 linhas, 1700-3080 caracteres, média de 2400]
+      ▼ ORIENTAÇÕES GERAIS
+      - Gênero textual: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
+      - Tema: "${essayInfo.enunciado.split(' ').slice(0, 7).join(' ')}"
+      - Coletânea (resumo): "${essayInfo.coletanea.substring(0, 150)}..."
+      - Critérios de avaliação: "${essayInfo.criteriosAvaliacao}"
+
+      ▼ FORMATO DE SAÍDA
+      - TÍTULO: 3 a 4 palavras em caixa alta
+      - TEXTO: entre 28 e 32 linhas (~2400 caracteres, margem 1700 a 3080)
+
+      Gere o texto completo com coesão e progressão clara de ideias. Evite qualquer marca de inteligência artificial ou inconsistência gramatical. Adote o estilo de um aluno nota 1000, com ritmo de escrita realista.
     `;
   },
 
@@ -191,7 +183,7 @@ function showNotification(message, progress) {
       backdrop-filter: blur(10px);
       z-index: 10001;
       font-size: 14px;
-      font-family: 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       transition: opacity 0.3s ease;
     `;
     document.body.appendChild(notification);
