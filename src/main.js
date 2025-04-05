@@ -91,17 +91,18 @@ function showNotification(message, progress) {
 async function generateAndAdaptEssay(theme, essayInfo) {
     const generationPrompt = `
         Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica:
-        - **Estrutura**: Introdução (tema e tese), Desenvolvimento (2 parágrafos com argumentos claros e exemplos concretos), Conclusão (resumo e solução/reflexão).
+        - **Estrutura**: Introdução (tema e tese), Desenvolvimento (2 parágrafos com argumentos claros), Conclusão (resumo e solução/reflexão).
         - **Estilo**: 
-          - Use linguagem simples, objetiva e fluida, como um estudante real.
-          - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano") ou termos difíceis (ex.: "paradigma", "epistemológico").
-          - Inclua visão pessoal (ex.: "Eu penso que...") e exemplos reais (ex.: "Na minha escola...").
+          - Use linguagem simples, objetiva e formal, como uma redação escolar.
+          - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
+          - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo", "né").
           - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
           - Evite repetições de palavras ou ideias (ex.: repetir "letramento científico" várias vezes).
           - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
           - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
+          - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - **Gênero textual**: "${essayInfo.generoTextual}".
-        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique fenômenos científicos, mostre compreensão das características da ciência, tire conclusões baseadas em evidências).
+        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como a ciência ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
         - **Tamanho**: 25-30 linhas, como redação de vestibular.
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
@@ -123,12 +124,13 @@ async function generateAndAdaptEssay(theme, essayInfo) {
     const adaptationPrompt = `
         Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro, corrigindo falhas de IA:
         - Mantenha o conteúdo e o significado original.
-        - Use tom natural, com visão pessoal e exemplos concretos.
-        - Use palavras simples e comuns, sem gírias ou termos complexos.
+        - Use tom formal e objetivo, sem opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
+        - Use palavras simples e comuns, sem gírias (ex.: "legal", "pra", "né") ou termos complexos (ex.: "paradigma").
+        - Corrija sintaxe: use "para" em vez de "pra", "as pessoas" em vez de "a gente", evite tom conversacional (ex.: "virar esse jogo").
         - Corrija pontuação: use apenas "." e "," adequadamente, remova "!" ou "?", garanta quebras de linha após cada ideia completa.
         - Elimine padrões de IA: repetições (ex.: repetir "letramento científico"), frases longas, vocabulário artificial ou transições forçadas.
         - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
-        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique fenômenos científicos, mostre compreensão das características da ciência).
+        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como a ciência ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
         Texto para adaptar: "${essayText}"
     `;
 
@@ -145,10 +147,11 @@ async function checkAiScore(text) {
         - **Repetições**: Uso excessivo de palavras ou frases (ex.: "letramento científico" várias vezes).
         - **Pontuação**: Uso de "!" ou "?", vírgulas ilógicas, quebras de linha inadequadas.
         - **Estrutura**: Frases longas e uniformes, transições forçadas ou vagas.
-        - **Vocabulário**: Gírias (ex.: "mano") ou termos complexos (ex.: "paradigma") fora de contexto.
-        - **Conteúdo**: Generalizações sem exemplos concretos ou visão pessoal.
+        - **Vocabulário**: Gírias (ex.: "pra", "né") ou termos complexos (ex.: "paradigma") fora de contexto.
+        - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo") ou falta de argumentos objetivos.
         - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
         - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
+        - **Tom**: Uso de tom conversacional (ex.: "a gente", "virar esse jogo").
         - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
