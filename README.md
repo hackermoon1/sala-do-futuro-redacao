@@ -1,4 +1,4 @@
-# **📝 HCK Redação - Ferramenta Avançada para Redações**  
+# **📝 HCK Redação**  
 
 ---
 
