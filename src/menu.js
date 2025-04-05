@@ -6,7 +6,7 @@ const styles = `
         width: clamp(180px, 25vw, 200px);
         max-width: 60vw;
         background: #252525;
-        color: #fff;        
+        color: #fff;
         border-radius: 12px;
         padding: 8px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
@@ -21,7 +21,7 @@ const styles = `
     }
     .hck-menu.closed {
         width: auto;
-        padding: 4px 10px;
+        padding: 4px 12px;
         background: #303030;
         border-radius: 10px;
         cursor: pointer;
@@ -29,16 +29,17 @@ const styles = `
         opacity: 1;
     }
     .hck-menu h3 {
-        margin: 0 0 6px;
-        font-size: clamp(14px, 4vw, 16px);
+        margin: 0 0 8px;
+        font-size: clamp(15px, 4vw, 18px);
         text-align: center;
         color: #fff;
-        font-weight: 600;
+        font-weight: 700;
         background: linear-gradient(90deg, #ff4444, #ff6666);
         -webkit-background-clip: text;
         background-clip: text;
         -webkit-text-fill-color: transparent;
-        letter-spacing: 1px;
+        letter-spacing: 1.5px;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
     .hck-menu button {
         width: 100%;
@@ -59,10 +60,11 @@ const styles = `
         font-size: clamp(13px, 3.5vw, 15px);
         color: #fff;
         font-weight: 500;
+        letter-spacing: 1px;
     }
     .hck-credits {
-        margin-top: 6px;
-        font-size: clamp(11px, 2.5vw, 13px);
+        margin-top: 8px;
+        font-size: clamp(12px, 2.5vw, 14px);
         text-align: center;
         color: #fff;
         background: linear-gradient(90deg, #ff4444, #ff6666);
@@ -70,6 +72,7 @@ const styles = `
         background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: bold;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.2);
     }
     @media (max-width: 768px) {
         .hck-menu {
@@ -99,7 +102,7 @@ function toggleMenu() {
             <button onclick="window.generateEssay()">Gerar</button>
             <button onclick="window.clearFields()">Limpar</button>
             <button onclick="toggleMenu()">Fechar</button>
-            <div class="hck-credits">Hackermoon</div>
+            <div class="hck-credits">by Hackermoon</div>
         `;
     } else {
         menu.classList.remove('open');
