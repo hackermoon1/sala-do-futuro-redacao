@@ -97,15 +97,17 @@ async function generateAndAdaptEssay(theme, essayInfo) {
           - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano") ou termos difíceis (ex.: "paradigma", "epistemológico").
           - Inclua visão pessoal (ex.: "Eu penso que...") e exemplos reais (ex.: "Na minha escola...").
           - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
-          - Evite erros de IA: sem repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
+          - Evite repetições de palavras ou ideias (ex.: repetir "letramento científico" várias vezes).
+          - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
+          - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
         - **Gênero textual**: "${essayInfo.generoTextual}".
-        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (respeite cada ponto).
+        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique fenômenos científicos, mostre compreensão das características da ciência, tire conclusões baseadas em evidências).
         - **Tamanho**: 25-30 linhas, como redação de vestibular.
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
         TITULO: [Título curto, até 5 palavras, resumindo o texto]
-        TEXTO: [Redação completa]
+        TEXTO: [Redação completa, sem tags HTML]
     `;
 
     showNotification('Gerando redação', 20);
@@ -124,8 +126,9 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - Use tom natural, com visão pessoal e exemplos concretos.
         - Use palavras simples e comuns, sem gírias ou termos complexos.
         - Corrija pontuação: use apenas "." e "," adequadamente, remova "!" ou "?", garanta quebras de linha após cada ideia completa.
-        - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
-        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}".
+        - Elimine padrões de IA: repetições (ex.: repetir "letramento científico"), frases longas, vocabulário artificial ou transições forçadas.
+        - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
+        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique fenômenos científicos, mostre compreensão das características da ciência).
         Texto para adaptar: "${essayText}"
     `;
 
@@ -139,12 +142,13 @@ async function checkAiScore(text) {
     showNotification('Verificando autenticidade', 70);
     const detectorPrompt = `
         Analise o texto abaixo e estime a probabilidade (%) de ser IA, com base nestas categorias:
-        - **Repetições**: Uso excessivo de palavras ou frases (ex.: "Além disso" várias vezes).
+        - **Repetições**: Uso excessivo de palavras ou frases (ex.: "letramento científico" várias vezes).
         - **Pontuação**: Uso de "!" ou "?", vírgulas ilógicas, quebras de linha inadequadas.
         - **Estrutura**: Frases longas e uniformes, transições forçadas ou vagas.
         - **Vocabulário**: Gírias (ex.: "mano") ou termos complexos (ex.: "paradigma") fora de contexto.
         - **Conteúdo**: Generalizações sem exemplos concretos ou visão pessoal.
         - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
+        - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
         - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
