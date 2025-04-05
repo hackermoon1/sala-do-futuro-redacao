@@ -90,24 +90,67 @@ function showNotification(message, progress) {
 
 async function generateAndAdaptEssay(theme, essayInfo) {
     const generationPrompt = `
-        Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica:
-        - **Estrutura**: Introdução (tema e tese), Desenvolvimento (2 parágrafos com argumentos claros), Conclusão (resumo e solução/reflexão).
-        - **Estilo**: 
-          - Use linguagem simples, objetiva e formal, como uma redação escolar.
-          - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
-          - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo", "né").
-          - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
-          - Evite repetições de palavras ou ideias (ex.: repetir "letramento científico" várias vezes).
-          - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
-          - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
-          - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
+        Você é um estudante brasileiro de alto nível (nota 900+ no ENEM) escrevendo uma redação escolar de forma natural e autêntica, evitando qualquer padrão detectável como IA:
+
+        ▼▼ 1. ANÁLISE FORENSE DE DETECTORES ▼▼
+        • **Variância léxica**: 
+          - Repita apenas 1 palavra-chave (ex.: "ciência") a cada 15-20 termos.
+          - Use 3 sinônimos diferentes para conceitos centrais (ex.: "ciência" → "conhecimento", "estudo", "pesquisa").
+        • **Padrões de digitação humana**:
+          - 70% das frases com 1-2 vírgulas rítmicas (ex.: "A ciência, essencial para o progresso, transforma vidas").
+          - 1 travessão (–) a cada 10 frases para intercalações (ex.: "A educação – muitas vezes negligenciada – precisa de apoio").
+          - 1 parêntese ocasional (ex.: "(como visto em projetos educacionais)").
+
+        ▼▼ 2. ESTRUTURA DINÂMICA ▼▼
+        • **Introdução** (5-7 linhas):
+          - 1 generalização aceitável ("É consenso que...").
+          - 1 dado aproximado ("cerca de 60% dos casos").
+          - 1 citação indireta ("Conforme especialistas").
+        • **Desenvolvimento** (2 parágrafos):
+          - Parágrafo 1: 
+            * Dado implícito + Exemplo genérico ("Em regiões menos favorecidas, onde o acesso é limitado,...").
+            * Conectivo variado ("Em contrapartida," / "Todavia,").
+          - Parágrafo 2:
+            * Hipótese ("Se tal medida fosse implementada...").
+            * Comparação cultural ("Diferentemente de outros países...").
+        • **Conclusão** (4-6 linhas):
+          - 1 proposta específica (ex.: "criar programas educacionais acessíveis").
+          - 1 final com eco temático ("Assim, o conhecimento fluirá como um rio").
+
+        ▼▼ 3. TÉCNICAS DE HUMANIZAÇÃO CRÍTICA ▼▼
+        • **Sinais de processamento cognitivo**:
+          - 1 dúvida retórica por parágrafo ("Será que isso é suficiente?").
+          - 2-3 frases com ordem inversa ("Fundamental é a ciência para...").
+        • **Microvariações estilísticas**:
+          - 20% das frases iniciadas com advérbios ("Atualmente," / "Progressivamente,").
+          - 10% com construções paralelas ("Não só ensina, mas também transforma").
+
+        ▼▼ 4. PROTOCOLO ANTI-DETECÇÃO ▼▼
+        • **Contramedidas para detectores**:
+          - Evite sequências de 3+ frases com mesma estrutura.
+          - Insira 1 frase incompleta a cada 15 frases (propósito retórico, ex.: "Um futuro melhor...").
+          - Use 1 coloquialismo formal ("por assim dizer") a cada 2 parágrafos.
+        • **Adaptação contextual**:
+          - Tema "letramento científico":
+            * 1 referência a "Agenda 2030" (sem detalhes técnicos).
+            * Exemplo genérico ("como ocorre em projetos educacionais").
+
+        ▼▼ 5. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
+        - Use linguagem simples, objetiva e formal, como uma redação escolar.
+        - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
+        - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
+        - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
+        - Evite repetições de palavras ou ideias.
+        - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
+        - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
+        - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - **Gênero textual**: "${essayInfo.generoTextual}".
-        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como a ciência ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-        - **Tamanho**: 25-30 linhas, como redação de vestibular.
+        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
+        - **Tamanho**: 28-32 linhas, como redação de vestibular.
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
-        TITULO: [Título curto, até 5 palavras, resumindo o texto]
+        TITULO: [Título curto, até 5 palavras, sem verbo, resumindo o texto]
         TEXTO: [Redação completa, sem tags HTML]
     `;
 
@@ -122,15 +165,19 @@ async function generateAndAdaptEssay(theme, essayInfo) {
     const essayText = aiResponse.split('TEXTO:')[1].trim();
 
     const adaptationPrompt = `
-        Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro, corrigindo falhas de IA:
+        Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro de alto nível (nota 900+ no ENEM), corrigindo falhas de IA:
         - Mantenha o conteúdo e o significado original.
         - Use tom formal e objetivo, sem opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - Use palavras simples e comuns, sem gírias (ex.: "legal", "pra", "né") ou termos complexos (ex.: "paradigma").
         - Corrija sintaxe: use "para" em vez de "pra", "as pessoas" em vez de "a gente", evite tom conversacional (ex.: "virar esse jogo").
         - Corrija pontuação: use apenas "." e "," adequadamente, remova "!" ou "?", garanta quebras de linha após cada ideia completa.
-        - Elimine padrões de IA: repetições (ex.: repetir "letramento científico"), frases longas, vocabulário artificial ou transições forçadas.
+        - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
         - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
-        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como a ciência ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
+        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
+        - **Variância léxica**: Use sinônimos (ex.: "ciência" → "conhecimento", "estudo", "pesquisa"), repetindo palavras-chave apenas a cada 15-20 termos.
+        - **Padrões humanos**: 70% das frases com 1-2 vírgulas rítmicas, 1 travessão a cada 10 frases, 1 parêntese ocasional.
+        - **Microvariações**: 20% das frases com advérbios iniciais, 10% com construções paralelas.
+        - **Anti-detecção**: Evite 3+ frases com mesma estrutura, inclua 1 frase incompleta a cada 15 frases, use "por assim dizer" a cada 2 parágrafos.
         Texto para adaptar: "${essayText}"
     `;
 
@@ -152,6 +199,7 @@ async function checkAiScore(text) {
         - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
         - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
         - **Tom**: Uso de tom conversacional (ex.: "a gente", "virar esse jogo").
+        - **Padrões humanos**: Falta de vírgulas rítmicas, travessões ou parênteses ocasionais.
         - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
