@@ -2,7 +2,7 @@ const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743847525/menu.js',
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743848961/menu.js',
     TEMPERATURE: 0.85
 };
 
@@ -56,9 +56,35 @@ async function getAiResponse(prompt, modelIndex = 0) {
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
         if (modelIndex < config.GEMINI_MODELS.length - 1) return await getAiResponse(prompt, modelIndex + 1);
-        alert(`HCK REDAÇÃO\n[ERROR] Falha na API Gemini: ${error.message}`);
         throw error;
     }
+}
+
+function showNotification(message, progress) {
+    let notification = document.querySelector('.hck-notification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.className = 'hck-notification';
+        notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #252525;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            z-index: 10001;
+            font-size: 14px;
+            font-family: Arial, sans-serif;
+            transition: opacity 0.3s ease;
+        `;
+        document.body.appendChild(notification);
+    }
+    notification.textContent = `HCK REDAÇÃO - ${message} (${progress}%)`;
+    notification.style.opacity = '1';
+    setTimeout(() => notification.style.opacity = '0', 3000);
 }
 
 async function generateAndAdaptEssay(theme, essayInfo) {
@@ -67,23 +93,23 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - **Estrutura**: Introdução (tema e tese), Desenvolvimento (2 parágrafos com argumentos claros e exemplos concretos), Conclusão (resumo e solução/reflexão).
         - **Estilo**: 
           - Use linguagem simples, objetiva e fluida, como um estudante real.
-          - Inclua visão pessoal (ex.: "Eu vejo que...") e exemplos reais (ex.: "Na minha cidade...").
-          - Use pontuação moderada: misture frases curtas e médias, evite "!" ou "?" excessivos, prefira pausas naturais com "." e ",".
+          - Inclua visão pessoal (ex.: "Eu acredito que...") e exemplos reais (ex.: "Na minha cidade...").
+          - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha adequadas após cada período completo.
           - Evite erros de IA: sem repetições (ex.: "Além disso" várias vezes), frases longas demais, vocabulário artificial ou generalizações vagas.
         - **Gênero textual**: "${essayInfo.generoTextual}".
-        - **Critérios**: "${essayInfo.criteriosAvaliacao}".
+        - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (respeite cada ponto).
         - **Tamanho**: 25-30 linhas, como redação de vestibular.
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
-        TITULO: [Título curto, até 8 palavras, resumindo o tema]
+        TITULO: [Título curto, até 5 palavras, resumindo o texto]
         TEXTO: [Redação completa]
     `;
 
-    alert('HCK REDAÇÃO\n[INFO] Gerando redação com IA...');
+    showNotification('Gerando redação com IA', 20);
     const aiResponse = await getAiResponse(generationPrompt);
     if (!aiResponse.includes('TITULO:') || !aiResponse.includes('TEXTO:')) {
-        alert('HCK REDAÇÃO\n[ERROR] Formato inválido da resposta da IA');
+        showNotification('Formato inválido da IA', 0);
         throw new Error('Formato inválido');
     }
 
@@ -94,26 +120,27 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro, corrigindo falhas de IA:
         - Mantenha o conteúdo e o significado original.
         - Use tom natural, com visão pessoal e exemplos concretos.
-        - Corrija pontuação: evite "!" ou "?" excessivos, use "." e "," para pausas naturais, misture frases curtas e médias.
+        - Corrija pontuação: use apenas "." e "," adequadamente, remova "!" ou "?", garanta quebras de linha após cada ideia completa.
         - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
+        - Respeite os critérios: "${essayInfo.criteriosAvaliacao}".
         Texto para adaptar: "${essayText}"
     `;
 
-    alert('HCK REDAÇÃO\n[INFO] Adaptando texto para escrita humana...');
+    showNotification('Adaptando para escrita humana', 50);
     const humanizedText = await getAiResponse(adaptationPrompt);
 
     return { title: essayTitle, text: humanizedText };
 }
 
 async function checkAiScore(text) {
-    alert('HCK REDAÇÃO\n[INFO] Verificando autenticidade...');
+    showNotification('Verificando autenticidade', 70);
     const detectorPrompt = `
-        Analise o texto abaixo e estime a probabilidade (em %) de ser IA, com base nestas categorias:
+        Analise o texto abaixo e estime a probabilidade (%) de ser IA, com base nestas categorias:
         - **Repetições**: Uso excessivo de palavras ou frases (ex.: "Além disso" várias vezes).
-        - **Pontuação**: Excesso de "!" ou "?", vírgulas ilógicas, falta de pausas naturais.
+        - **Pontuação**: Uso de "!" ou "?", vírgulas ilógicas, falta de pausas ou quebras de linha inadequadas.
         - **Estrutura**: Frases longas e uniformes, transições forçadas ou vagas.
         - **Conteúdo**: Generalizações sem exemplos concretos ou visão pessoal.
-        - **Plágio**: Similaridade com textos conhecidos de IA (ex.: estilo robótico).
+        - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade (ex.: estilo robótico).
         - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
@@ -122,7 +149,7 @@ async function checkAiScore(text) {
 }
 
 async function clearFields() {
-    alert('HCK REDAÇÃO\n[INFO] Limpando campos...');
+    showNotification('Limpando campos', 10);
     const firstTextarea = document.querySelector('textarea')?.parentElement;
     if (firstTextarea) await hackMUITextarea(firstTextarea, '');
 
@@ -130,17 +157,17 @@ async function clearFields() {
     const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
     if (lastTextarea) await hackMUITextarea(lastTextarea, '');
 
-    alert('HCK REDAÇÃO\n[SUCESSO] Campos limpos!');
+    showNotification('Campos limpos', 100);
 }
 
 async function generateEssay() {
     const activityElement = document.querySelector('p.MuiTypography-root.MuiTypography-body1.css-m576f2');
     if (!activityElement || !activityElement.textContent.includes('Redação')) {
-        alert('HCK REDAÇÃO\n[ERROR] Use em uma página de redação!');
+        showNotification('Use em página de redação', 0);
         return;
     }
 
-    alert('HCK REDAÇÃO\n[INFO] Coletando informações...');
+    showNotification('Coletando informações', 10);
     const essayInfo = {
         coletanea: document.querySelector('.css-1pvvm3t')?.innerText || '',
         enunciado: document.querySelector('.ql-align-justify')?.innerHTML || '',
@@ -152,33 +179,33 @@ async function generateEssay() {
     const { title, text } = await generateAndAdaptEssay(theme, essayInfo);
 
     const initialScore = await checkAiScore(text);
-    alert(`HCK REDAÇÃO\n[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
+    showNotification(`Verificação inicial: ${initialScore}% IA`, 80);
 
     const finalScore = await checkAiScore(text);
-    alert(`HCK REDAÇÃO\n[INFO] Verificação final: ${finalScore}% de chance de ser IA`);
+    showNotification(`Verificação final: ${finalScore}% IA`, 90);
 
-    alert('HCK REDAÇÃO\n[INFO] Inserindo título...');
+    showNotification('Inserindo título', 95);
     const firstTextarea = document.querySelector('textarea')?.parentElement;
     if (!firstTextarea || !await hackMUITextarea(firstTextarea, title)) {
-        alert('HCK REDAÇÃO\n[ERROR] Falha ao inserir título');
+        showNotification('Falha ao inserir título', 0);
         return;
     }
 
-    alert('HCK REDAÇÃO\n[INFO] Inserindo texto...');
+    showNotification('Inserindo texto', 98);
     const allTextareas = document.querySelectorAll('textarea');
     const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
     if (!lastTextarea || !await hackMUITextarea(lastTextarea, text)) {
-        alert('HCK REDAÇÃO\n[ERROR] Falha ao inserir texto');
+        showNotification('Falha ao inserir texto', 0);
         return;
     }
 
-    alert(`HCK REDAÇÃO\n[SUCESSO] Redação inserida! Humanidade estimada: ${100 - finalScore}%`);
+    showNotification(`Redação inserida! ${100 - finalScore}% humano`, 100);
 }
 
 const script = document.createElement('script');
 script.src = config.UI_SCRIPT_URL;
 script.onload = () => console.log('[HCK REDAÇÃO] Menu carregado!');
-script.onerror = () => alert('HCK REDAÇÃO\n[ERROR] Falha ao carregar o menu');
+script.onerror = () => showNotification('Falha ao carregar menu', 0);
 document.head.appendChild(script);
 
 console.log('[HCK REDAÇÃO] Iniciado!');
