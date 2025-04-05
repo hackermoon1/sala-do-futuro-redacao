@@ -3,10 +3,10 @@ const styles = `
         position: fixed;
         bottom: 10px;
         right: 20px;
-        width: clamp(180px, 25vw, 200px); /* Aumentado e autoajustável */
+        width: clamp(180px, 25vw, 200px);
         max-width: 60vw;
         background: #252525;
-        color: #fff;
+        color: #fff;        
         border-radius: 12px;
         padding: 8px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
@@ -30,10 +30,15 @@ const styles = `
     }
     .hck-menu h3 {
         margin: 0 0 6px;
-        font-size: clamp(13px, 3.5vw, 15px);
+        font-size: clamp(14px, 4vw, 16px);
         text-align: center;
         color: #fff;
-        font-weight: 500;
+        font-weight: 600;
+        background: linear-gradient(90deg, #ff4444, #ff6666);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 1px;
     }
     .hck-menu button {
         width: 100%;
@@ -57,7 +62,7 @@ const styles = `
     }
     .hck-credits {
         margin-top: 6px;
-        font-size: clamp(11px, 2.5vw, 13px); /* Fonte mais visível */
+        font-size: clamp(11px, 2.5vw, 13px);
         text-align: center;
         color: #fff;
         background: linear-gradient(90deg, #ff4444, #ff6666);
@@ -90,10 +95,9 @@ function toggleMenu() {
         menu.classList.remove('closed');
         menu.classList.add('open');
         menu.innerHTML = `
-            <h3>HCK REDAÇÃO</h3>
+            <h3>HCK REDAÇÃO v5</h3>
             <button onclick="window.generateEssay()">Gerar</button>
             <button onclick="window.clearFields()">Limpar</button>
-            <button onclick="alert('v5.0 - Hackermoon 2025')">Sobre</button>
             <button onclick="toggleMenu()">Fechar</button>
             <div class="hck-credits">Hackermoon</div>
         `;
@@ -109,5 +113,3 @@ menu.addEventListener('click', (e) => {
         toggleMenu();
     }
 });
-
-setTimeout(() => toggleMenu(), 200);
