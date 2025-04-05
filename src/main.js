@@ -2,9 +2,11 @@ const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743805356/menu.js',
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743847525/menu.js',
     TEMPERATURE: 0.9,
-    WIKIPEDIA_API: 'https://en.wikipedia.org/w/api.php'
+    WIKIPEDIA_API: 'https://en.wikipedia.org/w/api.php',
+    OPEN_LIBRARY_API: 'https://openlibrary.org/api/books',
+    GUTENBERG_API: 'https://gutendex.com/books'
 };
 
 async function hackMUITextarea(textareaElement, textToInsert) {
@@ -57,51 +59,74 @@ async function getAiResponse(prompt, modelIndex = 0) {
         return data.candidates[0].content.parts[0].text;
     } catch (error) {
         if (modelIndex < config.GEMINI_MODELS.length - 1) return await getAiResponse(prompt, modelIndex + 1);
-        alert(`[ERROR] Falha na API Gemini: ${error.message}`);
+        alert(`HCK REDAÇÃO\n[ERROR] Falha na API Gemini: ${error.message}`);
         throw error;
     }
 }
 
-async function fetchHumanTextFromWikipedia(theme) {
-    alert('[INFO] Buscando texto humano na Wikipedia...');
-    try {
-        const url = `${config.WIKIPEDIA_API}?action=query&list=search&srsearch=${encodeURIComponent(theme)}&format=json&origin=*`;
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Erro na Wikipedia API');
-        const data = await response.json();
-        const topResult = data.query.search[0]?.title;
-        if (!topResult) throw new Error('Nenhum resultado encontrado');
+async function fetchHumanText(theme) {
+    const apis = [
+        async () => {
+            const url = `${config.WIKIPEDIA_API}?action=query&list=search&srsearch=${encodeURIComponent(theme)}&format=json&origin=*`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const topResult = data.query.search[0]?.title;
+            if (!topResult) throw new Error('Sem resultado');
+            const contentUrl = `${config.WIKIPEDIA_API}?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topResult)}&format=json&origin=*`;
+            const contentResponse = await fetch(contentUrl);
+            const contentData = await contentResponse.json();
+            return Object.values(contentData.query.pages)[0].extract;
+        },
+        async () => {
+            const url = `${config.OPEN_LIBRARY_API}?bibkeys=ISBN:${Math.floor(Math.random() * 1000000000)}&format=json&jscmd=data`;
+            const response = await fetch(url);
+            const data = await response.json();
+            const book = Object.values(data)[0];
+            return book?.preview_text || book?.title || "Texto padrão de livro.";
+        },
+        async () => {
+            const url = `${config.GUTENBERG_API}?search=${encodeURIComponent(theme)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.results[0]?.title || "Texto clássico em domínio público.";
+        }
+    ];
 
-        const contentUrl = `${config.WIKIPEDIA_API}?action=query&prop=extracts&exintro&explaintext&titles=${encodeURIComponent(topResult)}&format=json&origin=*`;
-        const contentResponse = await fetch(contentUrl);
-        const contentData = await contentResponse.json();
-        const page = Object.values(contentData.query.pages)[0];
-        return page.extract || "A educação é essencial. Muitas escolas enfrentam dificuldades. Isso impacta os alunos.";
-    } catch (error) {
-        alert('[INFO] Falha na Wikipedia, usando exemplo padrão');
-        return "A tecnologia avança rápido. As pessoas usam ferramentas digitais diariamente. Isso traz benefícios e desafios.";
+    for (const api of apis) {
+        try {
+            const text = await api();
+            if (text && text.length > 50) {
+                alert(`HCK REDAÇÃO\n[INFO] Texto obtido de ${api.name || 'fonte externa'}`);
+                return text;
+            }
+        } catch (error) {
+            console.log(`Falha em uma API: ${error.message}`);
+        }
     }
+    alert('HCK REDAÇÃO\n[INFO] Nenhuma API respondeu, usando exemplo padrão');
+    return "A educação é essencial. Muitas escolas têm poucos recursos. Isso afeta o futuro.";
 }
 
-async function adaptFromWikipedia(text, theme) {
-    const humanText = await fetchHumanTextFromWikipedia(theme);
-    alert('[INFO] Adaptando texto com base em exemplo humano da Wikipedia...');
+async function adaptText(text, theme) {
+    const humanText = await fetchHumanText(theme);
+    alert('HCK REDAÇÃO\n[INFO] Adaptando texto com base em fonte humana...');
     return await getAiResponse(`
-        Adapte o texto abaixo para soar como escrito por um estudante humano, usando o exemplo como referência de estilo:
+        Adapte o texto abaixo para soar como escrito por um estudante humano brasileiro:
         - Mantenha o conteúdo e o significado original
         - Use um tom natural, claro e fluido, com pontuação moderada (evite excesso de "!" ou "?")
-        - Evite padrões de IA como frases longas demais, repetições ou vocabulário artificial
+        - Traduza ou ajuste para português brasileiro, se necessário
+        - Evite padrões de IA como frases longas, repetições ou vocabulário artificial
         Exemplo de escrita humana: "${humanText}"
         Texto para adaptar: "${text}"
     `);
 }
 
 async function checkAiScore(text) {
-    alert('[INFO] Verificando autenticidade com Gemini...');
+    alert('HCK REDAÇÃO\n[INFO] Verificando autenticidade...');
     const detectorPrompt = `
         Analise o texto abaixo e estime a probabilidade (em porcentagem) de ele ter sido escrito por IA:
-        - Considere padrões como frases longas e uniformes, repetições excessivas ou vocabulário artificial como sinais de IA
-        - Compare com escrita humana natural, que tem pontuação moderada e tom fluido
+        - Considere padrões como frases longas e uniformes, repetições ou vocabulário artificial como sinais de IA
+        - Compare com escrita humana natural, com pontuação moderada e tom fluido
         - Retorne apenas um número entre 0 e 100, onde 0 é totalmente humano e 100 é totalmente IA
         Texto: "${text}"
     `;
@@ -110,7 +135,7 @@ async function checkAiScore(text) {
 }
 
 async function clearFields() {
-    alert('[INFO] Limpando campos...');
+    alert('HCK REDAÇÃO\n[INFO] Limpando campos...');
     const firstTextarea = document.querySelector('textarea')?.parentElement;
     if (firstTextarea) await hackMUITextarea(firstTextarea, '');
 
@@ -118,24 +143,24 @@ async function clearFields() {
     const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
     if (lastTextarea) await hackMUITextarea(lastTextarea, '');
 
-    alert('[SUCESSO] Campos limpos!');
+    alert('HCK REDAÇÃO\n[SUCESSO] Campos limpos!');
 }
 
 async function generateEssay() {
     const activityElement = document.querySelector('p.MuiTypography-root.MuiTypography-body1.css-m576f2');
     if (!activityElement || !activityElement.textContent.includes('Redação')) {
-        alert('[ERROR] Use em uma página de redação!');
+        alert('HCK REDAÇÃO\n[ERROR] Use em uma página de redação!');
         return;
     }
 
-    alert('[INFO] Coletando informações...');
+    alert('HCK REDAÇÃO\n[INFO] Coletando informações...');
     const essayInfo = {
         coletanea: document.querySelector('.css-1pvvm3t')?.innerText || '',
         enunciado: document.querySelector('.ql-align-justify')?.innerHTML || '',
         generoTextual: document.querySelector('.css-1cq7p20')?.innerHTML || '',
         criteriosAvaliacao: document.querySelector('.ql-editor')?.innerHTML || ''
     };
-    const theme = essayInfo.enunciado.split(' ').slice(0, 5).join(' '); // Tema baseado nas primeiras 5 palavras
+    const theme = essayInfo.enunciado.split(' ').slice(0, 5).join(' ');
 
     const aiPrompt = `
         Você é um estudante brasileiro escrevendo uma redação escolar de forma natural e autêntica:
@@ -151,7 +176,7 @@ async function generateEssay() {
         TEXTO: [Redação completa]
     `;
 
-    alert('[INFO] Gerando redação com IA...');
+    alert('HCK REDAÇÃO\n[INFO] Gerando redação com IA...');
     let aiResponse;
     try {
         aiResponse = await getAiResponse(aiPrompt);
@@ -159,7 +184,7 @@ async function generateEssay() {
         return;
     }
     if (!aiResponse.includes('TITULO:') || !aiResponse.includes('TEXTO:')) {
-        alert('[ERROR] Formato inválido da resposta da IA');
+        alert('HCK REDAÇÃO\n[ERROR] Formato inválido da resposta da IA');
         return;
     }
 
@@ -167,35 +192,34 @@ async function generateEssay() {
     let essayText = aiResponse.split('TEXTO:')[1].trim();
 
     const initialScore = await checkAiScore(essayText);
-    alert(`[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
+    alert(`HCK REDAÇÃO\n[INFO] Verificação inicial: ${initialScore}% de chance de ser IA`);
 
-    alert('[INFO] Adaptando texto com base na Wikipedia...');
-    const humanizedText = await adaptFromWikipedia(essayText, theme);
+    const humanizedText = await adaptText(essayText, theme);
     const finalScore = await checkAiScore(humanizedText);
-    alert(`[INFO] Verificação final: ${finalScore}% de chance de ser IA`);
+    alert(`HCK REDAÇÃO\n[INFO] Verificação final: ${finalScore}% de chance de ser IA`);
 
-    alert('[INFO] Inserindo título...');
+    alert('HCK REDAÇÃO\n[INFO] Inserindo título...');
     const firstTextarea = document.querySelector('textarea')?.parentElement;
     if (!firstTextarea || !await hackMUITextarea(firstTextarea, essayTitle)) {
-        alert('[ERROR] Falha ao inserir título');
+        alert('HCK REDAÇÃO\n[ERROR] Falha ao inserir título');
         return;
     }
 
-    alert('[INFO] Inserindo texto...');
+    alert('HCK REDAÇÃO\n[INFO] Inserindo texto...');
     const allTextareas = document.querySelectorAll('textarea');
     const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
     if (!lastTextarea || !await hackMUITextarea(lastTextarea, humanizedText)) {
-        alert('[ERROR] Falha ao inserir texto');
+        alert('HCK REDAÇÃO\n[ERROR] Falha ao inserir texto');
         return;
     }
 
-    alert(`[SUCESSO] Redação inserida! Humanidade estimada: ${100 - finalScore}%`);
+    alert(`HCK REDAÇÃO\n[SUCESSO] Redação inserida! Humanidade estimada: ${100 - finalScore}%`);
 }
 
 const script = document.createElement('script');
 script.src = config.UI_SCRIPT_URL;
 script.onload = () => console.log('[HCK REDAÇÃO] Menu carregado!');
-script.onerror = () => alert('[ERROR] Falha ao carregar o menu');
+script.onerror = () => alert('HCK REDAÇÃO\n[ERROR] Falha ao carregar o menu');
 document.head.appendChild(script);
 
 console.log('[HCK REDAÇÃO] Iniciado!');
