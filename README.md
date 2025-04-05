@@ -67,9 +67,12 @@
 javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743858866/main.js').then(r=>r.text()).then(r=>eval(r))
 ```
 **Instruções:**  
-1. Cole o script acima no console do navegador (**F12 → Console**).  
-2. Aguarde o carregamento (**~3 segundos**).  
-3. Clique em **"Gerar Redação"** no menu flutuante.  
+1. Abra o menu de **favoritos**
+2. Toque em **"Adicionar"**
+3. Cole o mesmo código no campo de URL
+4. Salve como **"HCK REDAÇÃO"**
+
+🔹 *Compatível com todos navegadores modernos*
 
 ---
 
