@@ -2,7 +2,7 @@ const config = {
     GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
     GEMINI_MODELS: ['gemini-2.0-flash:generateContent', 'gemini-pro:generateContent'],
     API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
-    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743849431/menu.js',
+    UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743856199/menu.js',
     TEMPERATURE: 0.85
 };
 
@@ -70,15 +70,15 @@ function showNotification(message, progress) {
             bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(37, 37, 37, 0.9);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            backdrop-filter: blur(5px);
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
             z-index: 10001;
             font-size: 14px;
-            font-family: 'Inter', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'San Francisco', sans-serif;
             transition: opacity 0.3s ease;
         `;
         document.body.appendChild(notification);
@@ -90,57 +90,57 @@ function showNotification(message, progress) {
 
 async function generateAndAdaptEssay(theme, essayInfo) {
     const generationPrompt = `
-        Você é um estudante brasileiro escrevendo uma redação escolar com marcas sutis de escrita humana, seguindo este algoritmo:
+        Você é um estudante brasileiro escrevendo uma redação escolar com marcas sutis de escrita humana, seguindo este processo:
 
-        ▼▼ 1. ANÁLISE DA COLETÂNEA ▼▼
-        • Extraia 2-3 conceitos-chave (ex.: "conhecimento científico", "educação", "desinformação").
-        • Identifique 1 contradição ou ironia presente (ex.: "Embora a ciência seja essencial, poucos a compreendem").
-        • Selecione 1 dado real (se houver) ou use um dado aproximado (ex.: "cerca de 70%").
+        ▼▼ 1. DECODIFICAÇÃO DA COLETÂNEA ▼▼
+        • Extraia o CONFLITO CENTRAL (ex.: "acesso ao conhecimento vs. desinformação").
+        • Identifique 2 TERMOS-CHAVE (ex.: "conhecimento científico", "educação").
+        • Selecione 1 DADO USÁVEL (se existir) ou use um dado aproximado (ex.: "cerca de 70%").
 
-        ▼▼ 2. ESTRUTURA DINÂMICA ▼▼
-        • **Introdução** (4-5 linhas):
-          - [Contexto] + [Ironia/Contradição] (ex.: "A ciência avança, mas a sociedade, ironicamente, permanece desinformada").
-          - [Tese] sem verbos no infinitivo (ex.: "A educação científica torna-se uma necessidade urgente").
-        • **Desenvolvimento** (2 parágrafos):
-          - Parágrafo 1: 
-            [Argumento] + [Exemplo da coletânea, genérico] (ex.: "Em comunidades carentes, a falta de acesso é evidente") + [Análise] com comparação cultural (ex.: "Diferente de países onde a ciência é valorizada...").
-          - Parágrafo 2: 
-            [Contraponto] (ex.: "Por outro lado...") + [Referência histórica/artística] (ex.: "Na Idade Média, o conhecimento era restrito...") + [Consequência] + [Dado, se existir].
-        • **Conclusão** (4 linhas):
-          - [Solução] com agente específico (ex.: "O governo deve investir em educação científica").
-          - [Final] com analogia inesperada (ex.: "como um farol que guia na escuridão").
+        ▼▼ 2. ESTRUTURA ADAPTÁTICA ▼▼
+        • **Introdução** (3 frases):
+          - [CENA CONCRETA] + [PARADOXO] + [TESE]  
+            Ex.: "Enquanto escolas urbanas ensinam ciência, comunidades rurais não têm acesso. Essa contradição expõe um desafio. A educação científica precisa alcançar todos."
+        • **Desenvolvimento** (2 blocos):
+          - **Bloco 1**:  
+            - [Argumento principal]  
+            - [Exemplo da coletânea adaptado, genérico] (ex.: "Em regiões isoladas, o acesso à ciência é limitado").  
+            - [Comparação com sistema internacional] (ex.: "Diferente de países com sistemas educacionais avançados...").  
+          - **Bloco 2**:  
+            - [Virada argumentativa] ("O problema, porém, vai além...").  
+            - [Causa profunda] + [Efeito dominó] (ex.: "A falta de professores leva à desinformação, que se espalha rapidamente").  
+            - [Dado arredondado] (se aplicável).  
+        • **Conclusão** (3 elementos):  
+          - [Agente específico] (ex.: "O Ministério da Educação").  
+          - [Ação viável] (ex.: "criar programas de ensino itinerante").  
+          - [Imagem final] (ex.: "como formigas que carregam folhas juntas").
 
-        ▼▼ 3. TÉCNICAS ANTI-DETECÇÃO ▼▼
-        • **Pontuação**:
-          - Máximo 2 vírgulas por frase (ex.: "A ciência, essencial, ajuda a sociedade").
-          - 1 ponto-e-vírgula a cada 10 frases (ex.: "A educação avança; a desinformação persiste").
-          - Zero travessões.
-        • **Sintaxe**:
-          - 60% frases diretas (ex.: "A ciência ajuda as pessoas").
-          - 30% inversões (ex.: "Preocupante é a falta de educação").
-          - 10% frases nominais (ex.: "Necessidade urgente").
-        • **Vocabulário**:
-          - 3 sinônimos para cada termo-chave (ex.: "ciência" → "conhecimento", "pesquisa", "estudo").
-          - 1 repetição estratégica (ex.: "A educação é essencial. Essencial para o futuro").
+        ▼▼ 3. TÉCNICAS DE HUMANIZAÇÃO ▼▼
+        • **Ritmo**:  
+          - 1 frase ultra-curta (≤8 palavras) a cada 3 normais (ex.: "Desinformação cresce.").  
+          - Variação entre períodos simples e compostos.  
+        • **Pontuação Invisível**:  
+          - Máximo 1 vírgula por frase (exceto listas).  
+          - 1 ponto-e-vírgula a cada 15 frases.  
+          - Zero travessões/parentêses.  
+        • **Linguagem**:  
+          - 3 níveis de formalidade:  
+            - Técnico (1 termo por parágrafo, ex.: "método científico").  
+            - Jornalístico (80% do texto, ex.: "A sociedade enfrenta desafios").  
+            - Coloquial controlado (1 expressão formal, ex.: "em outras palavras").
 
-        ▼▼ 4. TESTE FINAL ▼▼
-        • Nenhuma frase com mais de 25 palavras.
-        • Nenhum dado não mencionado na coletânea (ou use dados aproximados).
-        • Nenhuma citação direta (apenas reconstruída).
-        • Variação de comprimento de parágrafos.
-
-        ▼▼ 5. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
+        ▼▼ 4. REGRAS ESPECÍFICAS DO CONTEXTO ▼▼
         - Use linguagem simples, objetiva e formal, como uma redação escolar.
         - Use palavras comuns e fáceis, sem gírias (ex.: "legal", "mano", "pra", "né") ou termos difíceis (ex.: "paradigma", "epistemológico").
         - Use "para" em vez de "pra", "as pessoas" em vez de "a gente", e evite tom conversacional (ex.: "virar esse jogo").
         - Use pontuação correta: apenas "." e "," para pausas naturais, sem "!" ou "?", quebras de linha após cada ideia completa.
-        - Evite repetições de palavras ou ideias (exceto a repetição estratégica).
+        - Evite repetições de palavras ou ideias.
         - Não inclua tags HTML ou formatação (ex.: <p>, <strong>, <u>) no texto final.
         - Evite erros de IA: repetições, frases longas demais, vocabulário artificial ou generalizações vagas.
         - Não use opiniões pessoais (ex.: "Eu penso que...") ou exemplos da vida (ex.: "Na minha escola...").
         - **Gênero textual**: "${essayInfo.generoTextual}".
         - **Critérios**: Siga rigorosamente "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência, tire conclusões baseadas em evidências). Não seja vago (ex.: "ciência ajuda a entender"), mas também não seja muito específico (ex.: citar fenômenos como "aquecimento global").
-        - **Tamanho**: 25-30 linhas, com variação de comprimento de parágrafos.
+        - **Tamanho**: 25-30 linhas.
         - **Base**: "${essayInfo.coletanea}" e "${essayInfo.enunciado}".
 
         Formato da resposta:
@@ -168,10 +168,9 @@ async function generateAndAdaptEssay(theme, essayInfo) {
         - Elimine padrões de IA: repetições, frases longas, vocabulário artificial ou transições forçadas.
         - Remova qualquer tag HTML (ex.: <p>, <strong>, <u>) do texto final.
         - Respeite os critérios: "${essayInfo.criteriosAvaliacao}" (ex.: explique como o conhecimento científico ajuda a entender fenômenos, mostre as características que diferenciam a ciência). Não seja vago, mas também não seja muito específico.
-        - **Pontuação**: Máximo 2 vírgulas por frase, 1 ponto-e-vírgula a cada 10 frases, zero travessões.
-        - **Sintaxe**: 60% frases diretas, 30% inversões, 10% frases nominais.
-        - **Vocabulário**: 3 sinônimos para conceitos-chave, 1 repetição estratégica.
-        - **Teste final**: Nenhuma frase com mais de 25 palavras, nenhum dado fora da coletânea, nenhuma citação direta, variação de comprimento de parágrafos.
+        - **Ritmo**: 1 frase ultra-curta (≤8 palavras) a cada 3 normais, variação entre períodos simples e compostos.
+        - **Pontuação**: Máximo 1 vírgula por frase (exceto listas), 1 ponto-e-vírgula a cada 15 frases, zero travessões/parentêses.
+        - **Linguagem**: 1 termo técnico por parágrafo, 80% jornalístico, 1 expressão formal (ex.: "em outras palavras").
         Texto para adaptar: "${essayText}"
     `;
 
@@ -185,15 +184,15 @@ async function checkAiScore(text) {
     showNotification('Verificando autenticidade', 70);
     const detectorPrompt = `
         Analise o texto abaixo e estime a probabilidade (%) de ser IA, com base nestas categorias:
-        - **Repetições**: Uso excessivo de palavras ou frases (ex.: "letramento científico" várias vezes).
-        - **Pontuação**: Uso de "!" ou "?", mais de 2 vírgulas por frase, presença de travessões, falta de ponto-e-vírgula.
-        - **Estrutura**: Frases longas (>25 palavras), parágrafos de comprimento uniforme, transições forçadas.
-        - **Vocabulário**: Gírias (ex.: "pra", "né") ou termos complexos (ex.: "paradigma") sem explicação.
-        - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo"), dados fora da coletânea, citações diretas.
+        - **Repetições**: Uso excessivo de palavras ou frases.
+        - **Pontuação**: Uso de "!" ou "?", mais de 1 vírgula por frase, presença de travessões/parentêses, falta de ponto-e-vírgula.
+        - **Estrutura**: Frases longas, falta de frases ultra-curtas, ausência de variação entre períodos simples e compostos.
+        - **Vocabulário**: Gírias (ex.: "pra", "né") ou termos complexos sem explicação.
+        - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo"), dados não mencionados, falta de argumentos objetivos.
         - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
         - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
         - **Tom**: Uso de tom conversacional (ex.: "a gente", "virar esse jogo").
-        - **Padrões humanos**: Falta de inversions (30%), frases nominais (10%), ou repetição estratégica.
+        - **Padrões humanos**: Falta de frases ultra-curtas, variação de períodos, ou linguagem com níveis de formalidade.
         - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
         Texto: "${text}"
     `;
@@ -201,16 +200,37 @@ async function checkAiScore(text) {
     return parseInt(score, 10) || 50;
 }
 
-async function clearFields() {
-    showNotification('Limpando campos', 10);
-    const firstTextarea = document.querySelector('textarea')?.parentElement;
-    if (firstTextarea) await hackMUITextarea(firstTextarea, '');
+async function clearTitle() {
+    showNotification('Limpando título', 10);
+    const firstTextarea = document.querySelector('textarea');
+    if (firstTextarea) {
+        const titleContainer = firstTextarea.parentElement;
+        await hackMUITextarea(titleContainer, '');
+    }
+    showNotification('Título limpo', 100);
+}
 
+async function clearText() {
+    showNotification('Limpando texto', 10);
     const allTextareas = document.querySelectorAll('textarea');
-    const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
-    if (lastTextarea) await hackMUITextarea(lastTextarea, '');
+    const lastTextarea = allTextareas[allTextareas.length - 1];
+    if (lastTextarea) {
+        const textContainer = lastTextarea.parentElement;
+        await hackMUITextarea(textContainer, '');
+    }
+    showNotification('Texto limpo', 100);
+}
 
-    showNotification('Campos limpos', 100);
+async function clearAll() {
+    showNotification('Limpando tudo', 10);
+    const allTextareas = document.querySelectorAll('textarea');
+    if (allTextareas.length > 0) {
+        const firstTextarea = allTextareas[0].parentElement;
+        await hackMUITextarea(firstTextarea, '');
+        const lastTextarea = allTextareas[allTextareas.length - 1].parentElement;
+        await hackMUITextarea(lastTextarea, '');
+    }
+    showNotification('Tudo limpo', 100);
 }
 
 async function generateEssay() {
@@ -263,4 +283,6 @@ document.head.appendChild(script);
 
 console.log('[HCK REDAÇÃO] Iniciado!');
 window.generateEssay = generateEssay;
-window.clearFields = clearFields;
+window.clearTitle = clearTitle;
+window.clearText = clearText;
+window.clearAll = clearAll;
