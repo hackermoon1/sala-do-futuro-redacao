@@ -1,4 +1,4 @@
-# **📝 HCK Redação**  
+# **📝 HCK REDAÇÃO**  
 
 ---
 
@@ -99,7 +99,8 @@ INDISPONÍVEL
 ```  
 
 **Relatórios de bugs/sugestões:**  
-✉️ Discord: hackermoon  
+✉️ Discord: hackermoon
+📩 [Github](https://github.com/hackermoon1/sala-do-futuro-redacao/issues)
 
 --- 
 
