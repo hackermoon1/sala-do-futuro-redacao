@@ -6,5 +6,5 @@
 
 
 ```js
-javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743857076/main.js').then(r=>r.text()).then(r=>eval(r))
+javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1743857674/main.js').then(r=>r.text()).then(r=>eval(r))
 ```
