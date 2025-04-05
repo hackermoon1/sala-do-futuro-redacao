@@ -2,7 +2,7 @@
 
 ### ETAPA DO TESTE: HUMANIZAÇÃO DE TEXTO
 
-### TENTATIVAS: 15
+### TENTATIVAS: 16
 
 
 ```js
