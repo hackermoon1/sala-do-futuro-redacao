@@ -1,15 +1,5 @@
 # 📝 HCK REDAÇÃO
 
-<details>
-<summary><strong>📌 Índice Rápido</strong></summary>
-
-1. [Etapas de Desenvolvimento](#-1-etapas-de-desenvolvimento)
-2. [Como Usar (Beta Atual)](#-2-como-usar-beta-atual)
-3. [Métricas e Eficácia](#-3-métricas-e-eficácia)
-4. [Próximas Atualizações](#-4-próximas-atualizações)
-5. [Contato e Suporte](#-5-contato-e-suporte)
-</details>
-
 ---
 
 ## 🔧 1. Etapas de Desenvolvimento
