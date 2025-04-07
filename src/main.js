@@ -4,7 +4,7 @@ const config = {
     'gemini-2.0-flash:generateContent',
     'gemini-pro:generateContent'
   ],
-  API_KEY: 'AIzaSyBhli8mGA1-1ZrFYD1FZzMFkHhDrdYCXwY',
+  API_KEY: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ',
   UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743862237/menu.js',
   TEMPERATURE: 0.7
 };
