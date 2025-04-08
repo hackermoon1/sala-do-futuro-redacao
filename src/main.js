@@ -21,39 +21,41 @@ const HUMAN_WRITER_PRO = {
       Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, mas acessível, imitando o estilo de um aluno nota 1000 do ensino médio. Priorize fluidez textual, coesão argumentativa e um tom natural, como se fosse escrita por um estudante jovem e engajado. Siga as instruções abaixo:
 
       ▼ ESTILO PERSONALIZADO
-      - Título direto (3-4 palavras) que dialogue com o tema, com apenas a primeira letra de cada palavra em maiúscula (ex.: "Ciência e Cidadania").
+      - Título direto (3-4 palavras) que dialogue com o tema, com apenas a primeira letra da primeira palavra em maiúscula (ex.: "Ciência para todos").
       - Frases curtas e médias, com no máximo 18 palavras.
-      - Uso estratégico de vírgulas, para pausas naturais.
+      - Use apenas aspas " ", vírgula "," e ponto "." como pontuação. Proíba o uso de parênteses "()", exclamação "!" e interrogação "?".
       - Inclua 1 erro ortográfico sutil a cada 2 parágrafos (ex.: "pra" no lugar de "para").
       - Linguagem formal, mas com 2-3 expressões coloquiais controladas (ex.: "vem passando por", "é fato", "aí não tem jeito", "não à toa", "tipo").
+      - Não invente dados numéricos. Use informações qualitativas ou baseadas na coletânea fornecida.
 
       ▼ ESTRUTURA HUMANIZADA
       INTRODUÇÃO (4-5 linhas):
       - [Contexto atual] + [Problema específico] + [Tese simplificada]
-      - Exemplo: "Nos últimos tempos, [tema] vem virando preocupação. [Dado concreto]. Diante disso, [solução proposta]"
+      - Exemplo: "Nos últimos tempos, a ciência vem virando alvo. Muitos duvidam dela. Diante disso, é preciso ensinar ciência de forma clara."
 
       DESENVOLVIMENTO (8-9 linhas cada):
       ▸ Parágrafo 1:
-      - [Frase-impacto] + [Exemplo histórico/cotidiano] + [Dado inventado plausível]
-      - Exemplo: "Quem nunca [situação relatable]? Em 2020, [exemplo]. Não à toa, [dado fictício]% dos [grupo]..."
+      - [Frase-impacto] + [Exemplo histórico/cotidiano baseado na coletânea] + [Informação qualitativa]
+      - Exemplo: "Muita gente já caiu em fake news. Na pandemia, notícias falsas atrapalharam a vacinação. Não à toa, a desconfiança cresceu."
       - Inclua o erro ortográfico sutil aqui (ex.: "pra").
 
       ▸ Parágrafo 2:
       - [Contraste] + [Falha sistêmica] + [Consequência]
-      - Exemplo: "Enquanto [problema], [instituição] segue [ação]. Resultado? [Efeito visível]"
+      - Exemplo: "Mas o problema não é só do povo. O governo não investe em educação. Resultado, a ciência fica distante."
 
       CONCLUSÃO (4 linhas):
       - [Retomada da tese] + [Ação concreta] + [Analogia simples]
-      - Exemplo: "Fica claro que [tema] precisa de [solução]. [Agente] deve [ação], como [analogia cotidiana]"
+      - Exemplo: "Fica claro que ciência precisa ser acessível. O MEC deve criar aulas práticas, como uma receita simples."
 
       ▼ ORIENTAÇÕES GERAIS
       - Gênero textual: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
       - Tema: "${essayInfo.enunciado.split(' ').slice(0, 7).join(' ')}"
       - Coletânea (resumo): "${essayInfo.coletanea.substring(0, 150)}..."
       - Critérios de avaliação: "${essayInfo.criteriosAvaliacao}"
+      - Use a coletânea para embasar os argumentos, como o "bombardeio de notícias falsas sobre as vacinas" e a desconfiança de parte da população.
 
       ▼ EVITE (PARA PARECER HUMANO):
-      - Frases clichês: "É notório que", "Pode-se dizer que", "Na minha escola..."
+      - Frases clichês: "É notório que", "Pode-se dizer que", "Na minha escola."
       - Exemplos pessoais ou gírias pesadas (ex.: "legal", "mano", "né").
       - Repetições de palavras ou ideias próximas (ex.: usar "educação" 5 vezes no mesmo parágrafo).
       - Frases artificiais ou muito rebuscadas (ex.: "A ciência propicia uma miríade de benefícios", "neglacionismo", "letramento").
@@ -61,12 +63,12 @@ const HUMAN_WRITER_PRO = {
 
       ▼ FORMATO DE SAÍDA (OBRIGATÓRIO)
       - O texto deve ser retornado EXATAMENTE no formato abaixo, sem omitir ou alterar as palavras "TÍTULO:" e "TEXTO:". Siga rigorosamente:
-      TÍTULO: [Título com 3-4 palavras, apenas primeira letra de cada palavra em maiúscula]
-      TEXTO: [O texto da redação, entre 28 e 32 linhas, ~2400 caracteres, margem 1700 a 3080]
+      TÍTULO: [Título com 3-4 palavras, apenas primeira letra da primeira palavra em maiúscula]
+      TEXTO: [O texto da redação, entre 28 e 32 linhas, ~2400 caracteres, margem 1800 a 3080]
 
       Exemplo de formato:
-      TÍTULO: Ciência e Cidadania
-      TEXTO: Nos últimos tempos, a confiança na ciência vem caindo...
+      TÍTULO: Ciência para todos
+      TEXTO: Nos últimos tempos, a ciência vem virando alvo...
 
       Gere o texto completo com coesão e progressão clara de ideias. Evite qualquer marca de inteligência artificial ou inconsistência gramatical. Adote o estilo de um aluno nota 1000, com ritmo de escrita realista.
     `;
@@ -208,7 +210,9 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
       } else {
         console.warn('[generateAndAdaptEssay] Máximo de tentativas atingido. Forçando formato básico.');
         showNotification('Erro persistente, ajustando formato', 20);
-        const fallbackTitle = theme.split(' ').slice(0, 3).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+        const fallbackTitle = theme.split(' ').slice(0, 3).map((word, index) => 
+          index === 0 ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word.toLowerCase()
+        ).join(' ');
         return {
           title: fallbackTitle,
           text: essay
@@ -219,17 +223,19 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
     let essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
     let essayText = essay.split('TEXTO:')[1].trim();
 
-    // Garantir que o título siga o formato "Ciência e Cidadania"
-    essayTitle = essayTitle.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    // Garantir que o título siga o formato "Ciência para todos"
+    essayTitle = essayTitle.split(' ').map((word, index) => 
+      index === 0 ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word.toLowerCase()
+    ).join(' ');
     console.log('[generateAndAdaptEssay] Título ajustado:', essayTitle);
 
     essayText = await HUMAN_WRITER_PRO.humanizeText(essayText);
 
     // Verificação de tamanho (caracteres e linhas)
     const lines = essayText.split('\n').length;
-    if (essayText.length < 1700 || lines < 28) {
+    if (essayText.length < 1800 || lines < 28) {
       const additionalPrompt = `
-        Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres e 28 linhas, mantendo o tom acessível e objetivo, e seguindo as mesmas regras de estrutura e humanização:
+        Expanda o texto abaixo para garantir que tenha pelo menos 1800 caracteres e 28 linhas, mantendo o tom acessível e objetivo, e seguindo as mesmas regras de estrutura e humanização:
         Texto: "${essayText}"
       `;
       essayText = await getAiResponse(additionalPrompt);
@@ -239,6 +245,7 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
 
     console.log('[generateAndAdaptEssay] Texto final:', essayText);
     console.log('[generateAndAdaptEssay] Número de linhas:', essayText.split('\n').length);
+    console.log('[generateAndAdaptEssay] Número de caracteres:', essayText.length);
 
     return { title: essayTitle, text: essayText };
   } catch (error) {
