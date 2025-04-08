@@ -55,11 +55,12 @@
   const title = document.createElement('div');
   title.textContent = 'HCK REDAÇÃO';
   title.style.cssText = `
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 700;
     color: #fff;
     text-align: center;
-    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
   `;
   menu.appendChild(title);
 
