@@ -3,5 +3,5 @@
 ## ATUALIZAÇÃO EM ANDAMENTO...
 
 ```js
-INDISPONÍVEL
+javascript:fetch('AQUI').then(r=>r.text()).then(r=>eval(r))
 ```
