@@ -5,7 +5,7 @@ const config = {
     'gemini-pro:generateContent'
   ],
   API_KEY: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ',
-  UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1743862237/menu.js',
+  UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1744108166/menu.js',
   TEMPERATURE: 0.7
 };
 
@@ -18,51 +18,56 @@ const HUMAN_WRITER_PRO = {
 
   generatePrompt: (essayInfo) => {
     return `
-      Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, natural e objetiva. Siga a estrutura e estilo descritos abaixo, priorizando fluidez textual e coesão argumentativa:
+      Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, natural e objetiva, imitando o estilo de um aluno nota 1000. Priorize fluidez textual, coesão argumentativa e um tom que balanceie formalidade com acessibilidade, como se fosse escrita por um estudante humano. Siga as instruções abaixo:
 
       ▼ ESTRUTURA ORIENTADORA
 
       1. INTRODUÇÃO (5 a 6 linhas):
-      - Contextualize o tema com um recorte atual, histórico ou cultural (dados, citações ou exemplos da coletânea).
-      - Apresente a **tese com clareza**, evitando clichês como "É notório que".
-      - Indique o percurso argumentativo de forma fluida ("Ao considerar..." ou "Nesse contexto...").
+      - Contextualize o tema com um recorte atual, histórico ou cultural, usando dados ou exemplos da coletânea (ex.: "No Brasil do século XXI" ou "Na Revolução Industrial").
+      - Apresente a **tese com clareza**, sem clichês como "É notório que" ou "É necessário". Use uma afirmação direta e original (ex.: "A educação é um pilar para o progresso").
+      - Indique o percurso argumentativo de forma fluida, com expressões como "Nesse contexto", "Ao considerar" ou "Dessa forma, percebe-se que".
 
       2. DESENVOLVIMENTO (2 parágrafos de 8 a 10 linhas cada):
       - Parágrafo 1:
-        • Desenvolva um argumento central com causa e consequência.
-        • Traga um exemplo relevante e contextualizado (histórico, social, científico ou cultural).
-        • Relacione o exemplo com a tese e finalize com uma análise crítica.
+        • Desenvolva um argumento central com causa e consequência, usando conectivos variados (ex.: "por isso", "dessa forma", "em razão disso").
+        • Traga um exemplo relevante e contextualizado (ex.: Revolução Industrial, abolição da escravatura, ou políticas públicas recentes no Brasil).
+        • Relacione o exemplo com a tese e finalize com uma análise crítica, usando expressões como "Isso demonstra que" ou "Fica evidente que".
       - Parágrafo 2:
-        • Apresente um segundo ponto de vista, complementar ou antagônico.
-        • Insira novos dados, estatísticas ou fenômenos sociais.
-        • Conecte com a tese, usando síntese reflexiva ("Isso evidencia que...").
+        • Apresente um segundo ponto de vista, complementar ou antagônico, com transições suaves (ex.: "Por outro lado", "Em contrapartida").
+        • Insira dados ou fenômenos sociais verossímeis (ex.: "Segundo especialistas, cerca de 70% das escolas públicas carecem de laboratórios").
+        • Conecte com a tese, usando síntese reflexiva (ex.: "Isso evidencia que" ou "Portanto, percebe-se que").
 
       3. CONCLUSÃO (4 a 5 linhas):
-      - Retome a tese com outras palavras.
-      - Proponha uma **solução completa**: agente, ação, modo de execução, efeito esperado.
-      - Finalize com uma analogia leve, metáfora simples ou frase de impacto suave.
+      - Retome a tese com outras palavras, sem repeti-la literalmente.
+      - Proponha uma **solução completa**: agente (ex.: Ministério da Educação), ação (ex.: criar programas), modo de execução (ex.: com oficinas itinerantes), efeito esperado (ex.: maior inclusão social).
+      - Finalize com uma analogia leve, metáfora simples ou frase de impacto suave (ex.: "como uma ponte que une margens distantes").
 
-      ▼ ESTILO E LINGUAGEM
+      ▼ ESTILO E LINGUAGEM (HUMANIZAÇÃO)
 
       - Fluidez frasal:
-        • 70% frases médias (12-20 palavras)
-        • 20% curtas (até 8 palavras)
-        • 10% longas (21-25), com pontuação precisa
+        • 70% frases médias (12-20 palavras), 20% curtas (até 8 palavras), 10% longas (21-25 palavras).
+        • Varie o ritmo das frases para imitar a escrita humana, alternando entre períodos simples e compostos.
+        • Use conectivos variados para transições suaves (ex.: "dessa forma", "por outro lado", "em contrapartida", "assim").
 
       - Vocabulário:
-        • Use palavras claras e bem colocadas — sem termos rebuscados ou gírias
-        • Varie conceitos-chave com sinônimos contextuais (ex.: "educação", "formação", "ensino")
-        • Inclua 1 termo técnico com explicação simples
+        • Use palavras claras e bem colocadas, típicas de um estudante do ensino médio (ex.: "educação", "formação", "ensino"; "desafio", "obstáculo", "dificuldade").
+        • Varie conceitos-chave com sinônimos contextuais, evitando repetições (ex.: "ciência", "conhecimento", "sabedoria").
+        • Inclua 1 termo técnico com explicação simples (ex.: "alfabetização científica, ou seja, a capacidade de compreender conceitos básicos da ciência").
 
       - Pontuação:
-        • Use pontuação natural (vírgulas moderadas, ponto-e-vírgula com critério)
-        • Evite travessões e parênteses
+        • Use pontuação natural: vírgulas moderadas (máximo 1 por frase), ponto-e-vírgula a cada 2 parágrafos, sem travessões ou parênteses.
+        • Evite excesso de pontos finais; prefira frases compostas com conjunções ("e", "mas", "porque").
 
-      ▼ EVITE:
+      - Tom:
+        • Adote um tom formal, mas acessível, como o de um estudante do ensino médio escrevendo para o ENEM.
+        • Evite tom conversacional (ex.: "a gente", "virar esse jogo") ou excessivamente acadêmico (ex.: "paradigma", "epistemológico").
+
+      ▼ EVITE (PARA PARECER HUMANO):
       × Frases clichês: "É notório que", "Pode-se dizer que", "Na minha escola..."
-      × Exemplos pessoais, gírias ou expressões informais
-      × Repetições de ideias ou termos próximos
-      × Frases artificiais ou muito rebuscadas
+      × Exemplos pessoais ou gírias (ex.: "legal", "pra", "né").
+      × Repetições de palavras ou ideias próximas (ex.: usar "educação" 5 vezes no mesmo parágrafo).
+      × Frases artificiais ou muito rebuscadas (ex.: "A ciência propicia uma miríade de benefícios").
+      × Padrões de IA: repetições de estrutura (ex.: começar todas as frases com "Além disso"), generalizações vagas (ex.: "ciência ajuda a entender o mundo"), ou tom robótico.
 
       ▼ ORIENTAÇÕES GERAIS
       - Gênero textual: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
@@ -162,7 +167,7 @@ async function getAiResponse(prompt, modelIndex = 0) {
     const data = await response.json();
     if (!data.candidates?.[0]?.content?.parts) throw new Error('Resposta inválida');
     const text = data.candidates[0].content.parts[0].text;
-    console.log('[getAiResponse] Resposta da API:', text); // Log para debugging
+    console.log('[getAiResponse] Resposta da API:', text);
     return text;
   } catch (error) {
     console.error(`[getAiResponse] Erro no modelo ${model}:`, error);
@@ -209,22 +214,20 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
 
   try {
     let essay = await getAiResponse(prompt);
-    console.log('[generateAndAdaptEssay] Texto bruto:', essay); // Log para debugging
+    console.log('[generateAndAdaptEssay] Texto bruto:', essay);
 
-    // Verificar o formato
     if (!essay.includes('TÍTULO:') || !essay.includes('TEXTO:')) {
       if (attempt < maxAttempts) {
         console.warn(`[generateAndAdaptEssay] Formato inválido na tentativa ${attempt}. Tentando novamente...`);
         showNotification('Formato incorreto, tentando novamente', 20);
         return await generateAndAdaptEssay(theme, essayInfo, attempt + 1);
       } else {
-        // Se todas as tentativas falharem, forçar um formato básico
         console.warn('[generateAndAdaptEssay] Máximo de tentativas atingido. Forçando formato básico.');
         showNotification('Erro persistente, ajustando formato', 20);
-        const fallbackTitle = theme.toUpperCase().slice(0, 20); // Título básico baseado no tema
+        const fallbackTitle = theme.toUpperCase().slice(0, 20);
         return {
           title: fallbackTitle,
-          text: essay // Usa o texto bruto, mesmo que não esteja no formato ideal
+          text: essay
         };
       }
     }
@@ -232,10 +235,8 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
     const essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
     let essayText = essay.split('TEXTO:')[1].trim();
 
-    // Pós-processamento
     essayText = await HUMAN_WRITER_PRO.humanizeText(essayText);
 
-    // Verificação de tamanho
     if (essayText.length < 1700) {
       const additionalPrompt = `
         Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
