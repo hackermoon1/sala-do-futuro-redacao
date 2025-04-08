@@ -18,56 +18,33 @@ const HUMAN_WRITER_PRO = {
 
   generatePrompt: (essayInfo) => {
     return `
-      Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, natural e objetiva, imitando o estilo de um aluno nota 1000. Priorize fluidez textual, coesão argumentativa e um tom que balanceie formalidade com acessibilidade, como se fosse escrita por um estudante humano. Siga as instruções abaixo:
+      Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, mas acessível, imitando o estilo de um aluno nota 1000 do ensino médio. Priorize fluidez textual, coesão argumentativa e um tom natural, como se fosse escrita por um estudante jovem e engajado. Siga as instruções abaixo:
 
-      ▼ ESTRUTURA ORIENTADORA
+      ▼ ESTILO PERSONALIZADO
+      - Título direto (3-4 palavras) que dialogue com o tema, com apenas a primeira letra de cada palavra em maiúscula (ex.: "Ciência e Cidadania").
+      - Frases curtas e médias, com no máximo 18 palavras.
+      - Uso estratégico de vírgulas, para pausas naturais.
+      - Inclua 1 erro ortográfico sutil a cada 2 parágrafos (ex.: "pra" no lugar de "para").
+      - Linguagem formal, mas com 2-3 expressões coloquiais controladas (ex.: "vem passando por", "é fato", "aí não tem jeito", "não à toa", "tipo").
 
-      1. INTRODUÇÃO (5 a 6 linhas):
-      - Contextualize o tema com um recorte atual, histórico ou cultural, usando dados ou exemplos da coletânea (ex.: "No Brasil do século XXI" ou "Na Revolução Industrial").
-      - Apresente a **tese com clareza**, sem clichês como "É notório que" ou "É necessário". Use uma afirmação direta e original (ex.: "A educação é um pilar para o progresso").
-      - Indique o percurso argumentativo de forma fluida, com expressões como "Nesse contexto", "Ao considerar" ou "Dessa forma, percebe-se que".
+      ▼ ESTRUTURA HUMANIZADA
+      INTRODUÇÃO (4-5 linhas):
+      - [Contexto atual] + [Problema específico] + [Tese simplificada]
+      - Exemplo: "Nos últimos tempos, [tema] vem virando preocupação. [Dado concreto]. Diante disso, [solução proposta]"
 
-      2. DESENVOLVIMENTO (2 parágrafos de 8 a 10 linhas cada):
-      - Parágrafo 1:
-        • Desenvolva um argumento central com causa e consequência, usando conectivos variados (ex.: "por isso", "dessa forma", "em razão disso").
-        • Traga um exemplo relevante e contextualizado (ex.: Revolução Industrial, abolição da escravatura, ou políticas públicas recentes no Brasil).
-        • Relacione o exemplo com a tese e finalize com uma análise crítica, usando expressões como "Isso demonstra que" ou "Fica evidente que".
-      - Parágrafo 2:
-        • Apresente um segundo ponto de vista, complementar ou antagônico, com transições suaves (ex.: "Por outro lado", "Em contrapartida").
-        • Insira dados ou fenômenos sociais verossímeis (ex.: "Segundo especialistas, cerca de 70% das escolas públicas carecem de laboratórios").
-        • Conecte com a tese, usando síntese reflexiva (ex.: "Isso evidencia que" ou "Portanto, percebe-se que").
+      DESENVOLVIMENTO (8-9 linhas cada):
+      ▸ Parágrafo 1:
+      - [Frase-impacto] + [Exemplo histórico/cotidiano] + [Dado inventado plausível]
+      - Exemplo: "Quem nunca [situação relatable]? Em 2020, [exemplo]. Não à toa, [dado fictício]% dos [grupo]..."
+      - Inclua o erro ortográfico sutil aqui (ex.: "pra").
 
-      3. CONCLUSÃO (4 a 5 linhas):
-      - Retome a tese com outras palavras, sem repeti-la literalmente.
-      - Proponha uma **solução completa**: agente (ex.: Ministério da Educação), ação (ex.: criar programas), modo de execução (ex.: com oficinas itinerantes), efeito esperado (ex.: maior inclusão social).
-      - Finalize com uma analogia leve, metáfora simples ou frase de impacto suave (ex.: "como uma ponte que une margens distantes").
+      ▸ Parágrafo 2:
+      - [Contraste] + [Falha sistêmica] + [Consequência]
+      - Exemplo: "Enquanto [problema], [instituição] segue [ação]. Resultado? [Efeito visível]"
 
-      ▼ ESTILO E LINGUAGEM (HUMANIZAÇÃO)
-
-      - Fluidez frasal:
-        • 70% frases médias (12-20 palavras), 20% curtas (até 8 palavras), 10% longas (21-25 palavras).
-        • Varie o ritmo das frases para imitar a escrita humana, alternando entre períodos simples e compostos.
-        • Use conectivos variados para transições suaves (ex.: "dessa forma", "por outro lado", "em contrapartida", "assim").
-
-      - Vocabulário:
-        • Use palavras claras e bem colocadas, típicas de um estudante do ensino médio (ex.: "educação", "formação", "ensino"; "desafio", "obstáculo", "dificuldade").
-        • Varie conceitos-chave com sinônimos contextuais, evitando repetições (ex.: "ciência", "conhecimento", "sabedoria").
-        • Inclua 1 termo técnico com explicação simples (ex.: "alfabetização científica, ou seja, a capacidade de compreender conceitos básicos da ciência").
-
-      - Pontuação:
-        • Use pontuação natural: vírgulas moderadas (máximo 1 por frase), ponto-e-vírgula a cada 2 parágrafos, sem travessões ou parênteses.
-        • Evite excesso de pontos finais; prefira frases compostas com conjunções ("e", "mas", "porque").
-
-      - Tom:
-        • Adote um tom formal, mas acessível, como o de um estudante do ensino médio escrevendo para o ENEM.
-        • Evite tom conversacional (ex.: "a gente", "virar esse jogo") ou excessivamente acadêmico (ex.: "paradigma", "epistemológico").
-
-      ▼ EVITE (PARA PARECER HUMANO):
-      × Frases clichês: "É notório que", "Pode-se dizer que", "Na minha escola..."
-      × Exemplos pessoais ou gírias (ex.: "legal", "pra", "né").
-      × Repetições de palavras ou ideias próximas (ex.: usar "educação" 5 vezes no mesmo parágrafo).
-      × Frases artificiais ou muito rebuscadas (ex.: "A ciência propicia uma miríade de benefícios").
-      × Padrões de IA: repetições de estrutura (ex.: começar todas as frases com "Além disso"), generalizações vagas (ex.: "ciência ajuda a entender o mundo"), ou tom robótico.
+      CONCLUSÃO (4 linhas):
+      - [Retomada da tese] + [Ação concreta] + [Analogia simples]
+      - Exemplo: "Fica claro que [tema] precisa de [solução]. [Agente] deve [ação], como [analogia cotidiana]"
 
       ▼ ORIENTAÇÕES GERAIS
       - Gênero textual: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
@@ -75,14 +52,21 @@ const HUMAN_WRITER_PRO = {
       - Coletânea (resumo): "${essayInfo.coletanea.substring(0, 150)}..."
       - Critérios de avaliação: "${essayInfo.criteriosAvaliacao}"
 
+      ▼ EVITE (PARA PARECER HUMANO):
+      - Frases clichês: "É notório que", "Pode-se dizer que", "Na minha escola..."
+      - Exemplos pessoais ou gírias pesadas (ex.: "legal", "mano", "né").
+      - Repetições de palavras ou ideias próximas (ex.: usar "educação" 5 vezes no mesmo parágrafo).
+      - Frases artificiais ou muito rebuscadas (ex.: "A ciência propicia uma miríade de benefícios", "neglacionismo", "letramento").
+      - Padrões de IA: repetições de estrutura, generalizações vagas (ex.: "ciência ajuda a entender o mundo"), ou tom robótico.
+
       ▼ FORMATO DE SAÍDA (OBRIGATÓRIO)
       - O texto deve ser retornado EXATAMENTE no formato abaixo, sem omitir ou alterar as palavras "TÍTULO:" e "TEXTO:". Siga rigorosamente:
-      TÍTULO: [3 a 4 palavras em caixa alta]
-      TEXTO: [o texto da redação, entre 28 e 32 linhas, ~2400 caracteres, margem 1700 a 3080]
+      TÍTULO: [Título com 3-4 palavras, apenas primeira letra de cada palavra em maiúscula]
+      TEXTO: [O texto da redação, entre 28 e 32 linhas, ~2400 caracteres, margem 1700 a 3080]
 
       Exemplo de formato:
-      TÍTULO: EXEMPLO DE TÍTULO
-      TEXTO: Aqui começa o texto da redação, com introdução, desenvolvimento e conclusão...
+      TÍTULO: Ciência e Cidadania
+      TEXTO: Nos últimos tempos, a confiança na ciência vem caindo...
 
       Gere o texto completo com coesão e progressão clara de ideias. Evite qualquer marca de inteligência artificial ou inconsistência gramatical. Adote o estilo de um aluno nota 1000, com ritmo de escrita realista.
     `;
@@ -90,10 +74,10 @@ const HUMAN_WRITER_PRO = {
 
   humanizeText: async (text) => {
     const fixes = {
-      "É necessário": "Requer-se",
-      "Por exemplo": "Como visto em",
-      "Além disso": "Ademais",
-      "No entanto": "Contudo"
+      "É necessário": "Precisa",
+      "Por exemplo": "Tipo",
+      "Além disso": "Fora isso",
+      "No entanto": "Mas"
     };
 
     return Object.entries(fixes).reduce(
@@ -210,7 +194,7 @@ function showNotification(message, progress) {
 async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
   const maxAttempts = 3;
   const prompt = HUMAN_WRITER_PRO.generatePrompt(essayInfo);
-  showNotification('Gerando redação', 20);
+  showNotification('Gerando redação com estilo humanizado', 20);
 
   try {
     let essay = await getAiResponse(prompt);
@@ -224,7 +208,7 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
       } else {
         console.warn('[generateAndAdaptEssay] Máximo de tentativas atingido. Forçando formato básico.');
         showNotification('Erro persistente, ajustando formato', 20);
-        const fallbackTitle = theme.toUpperCase().slice(0, 20);
+        const fallbackTitle = theme.split(' ').slice(0, 3).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
         return {
           title: fallbackTitle,
           text: essay
@@ -232,20 +216,29 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
       }
     }
 
-    const essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
+    let essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
     let essayText = essay.split('TEXTO:')[1].trim();
+
+    // Garantir que o título siga o formato "Ciência e Cidadania"
+    essayTitle = essayTitle.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    console.log('[generateAndAdaptEssay] Título ajustado:', essayTitle);
 
     essayText = await HUMAN_WRITER_PRO.humanizeText(essayText);
 
-    if (essayText.length < 1700) {
+    // Verificação de tamanho (caracteres e linhas)
+    const lines = essayText.split('\n').length;
+    if (essayText.length < 1700 || lines < 28) {
       const additionalPrompt = `
-        Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres, mantendo o tom formal e objetivo, e seguindo as mesmas regras de estrutura e humanização:
+        Expanda o texto abaixo para garantir que tenha pelo menos 1700 caracteres e 28 linhas, mantendo o tom acessível e objetivo, e seguindo as mesmas regras de estrutura e humanização:
         Texto: "${essayText}"
       `;
       essayText = await getAiResponse(additionalPrompt);
-    } else if (essayText.length > 3080) {
+    } else if (essayText.length > 3080 || lines > 32) {
       essayText = essayText.substring(0, 3080).replace(/\s+\S*$/, '');
     }
+
+    console.log('[generateAndAdaptEssay] Texto final:', essayText);
+    console.log('[generateAndAdaptEssay] Número de linhas:', essayText.split('\n').length);
 
     return { title: essayTitle, text: essayText };
   } catch (error) {
@@ -263,11 +256,11 @@ async function checkAiScore(text) {
     - **Repetições**: Uso excessivo de palavras ou frases.
     - **Pontuação**: Uso de "!" ou "?", mais de 1 vírgula por frase, presença de travessões/parentêses, falta de ponto-e-vírgula.
     - **Estrutura**: Frases longas, falta de frases ultra-curtas, ausência de variação entre períodos simples e compostos.
-    - **Vocabulário**: Gírias (ex.: "pra", "né") ou termos complexos sem explicação.
+    - **Vocabulário**: Gírias pesadas (ex.: "mano", "né") ou termos complexos sem explicação.
     - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo"), dados não mencionados, falta de argumentos objetivos.
     - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
     - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
-    - **Tom**: Uso de tom conversacional (ex.: "a gente", "virar esse jogo").
+    - **Tom**: Uso de tom conversacional excessivo (ex.: "a gente", "virar esse jogo") ou tom robótico.
     - **Padrões humanos**: Falta de frases ultra-curtas, variação de períodos, ou linguagem com níveis de formalidade.
     - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
     Texto: "${text}"
