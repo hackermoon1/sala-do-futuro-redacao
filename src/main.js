@@ -5,7 +5,7 @@ const config = {
     'gemini-pro:generateContent'
   ],
   API_KEY: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ',
-  UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1744108166/menu.js',
+  UI_SCRIPT_URL: 'https://res.cloudinary.com/dctxcezsd/raw/upload/v1744120063/menu.js',
   TEMPERATURE: 0.7
 };
 
@@ -18,7 +18,7 @@ const HUMAN_WRITER_PRO = {
 
   generatePrompt: (essayInfo) => {
     return `
-      Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, mas acessível, imitando o estilo de um aluno nota 1000 do ensino médio. Priorize fluidez textual, coesão argumentativa e um tom natural, como se fosse escrita por um estudante jovem e engajado. Siga as instruções abaixo:
+      Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, mas acessível e versátil, imitando o estilo de um aluno nota 1000 do ensino médio. Priorize fluidez textual, coesão argumentativa e um tom natural, com variações (ex.: frases reflexivas seguidas de frases diretas), como se fosse escrita por um estudante jovem e engajado. Siga as instruções abaixo:
 
       ▼ ESTILO PERSONALIZADO
       - Título criativo e impactante (3-4 palavras) que dialogue com o tema, com apenas a primeira letra da primeira palavra em maiúscula (ex.: "Ciência ao alcance").
@@ -27,25 +27,28 @@ const HUMAN_WRITER_PRO = {
       - Inclua 1 erro ortográfico sutil a cada 2 parágrafos (ex.: "pra" no lugar de "para").
       - Linguagem formal, mas com 2-3 expressões coloquiais controladas (ex.: "vem passando por", "é fato", "aí não tem jeito", "não à toa", "tipo").
       - Não invente dados numéricos. Use informações qualitativas ou baseadas na coletânea fornecida.
+      - Mostre conhecimento médio do tema, com conceitos que um estudante do ensino médio dominaria (ex.: ciência na saúde, no meio ambiente).
 
       ▼ ESTRUTURA HUMANIZADA (OBRIGATÓRIA)
       INTRODUÇÃO (4-5 linhas):
-      - [Contexto atual] + [Problema específico] + [Tese simplificada]
-      - Exemplo: "Nos últimos tempos, a ciência vem virando alvo. Muitos duvidam dela. Diante disso, é preciso ensinar ciência de forma clara."
+      - Comece com um exemplo ou dado da coletânea para contextualizar, de forma envolvente.
+      - Apresente o problema com tom versátil (ex.: uma frase reflexiva, seguida de uma direta).
+      - Finalize com uma tese clara e objetiva.
+      - Exemplo: "A coletânea diz que 'teorias são propostas e novas tecnologias são desenvolvidas'. Mas poucos têm acesso a isso. Diante disso, é preciso democratizar a ciência."
 
       DESENVOLVIMENTO (8-9 linhas cada):
       ▸ Parágrafo 1:
-      - [Frase-impacto] + [Exemplo histórico/cotidiano baseado na coletânea] + [Informação qualitativa]
-      - Exemplo: "Muita gente já caiu em fake news. Na pandemia, notícias falsas atrapalharam a vacinação. Não à toa, a desconfiança cresceu."
+      - [Frase-impacto] + [Citação ou paráfrase da coletânea] + [Exemplo cotidiano com conhecimento médio]
+      - Exemplo: "A ciência pode mudar vidas. A coletânea fala que 'novas tecnologias são desenvolvidas', mas muitos não sabem disso. Tipo, remédios novos salvam vidas."
       - Inclua o erro ortográfico sutil aqui (ex.: "pra").
 
       ▸ Parágrafo 2:
-      - [Contraste] + [Falha sistêmica] + [Consequência]
-      - Exemplo: "Mas o problema não é só do povo. O governo não investe em educação. Resultado, a ciência fica distante."
+      - [Contraste] + [Falha sistêmica conectada à coletânea] + [Consequência detalhada]
+      - Exemplo: "Mas o problema não é só do povo. A coletânea diz que a ciência deve be 'acessível a todos', mas falta investimento. Resultado, a desinformação cresce."
 
       CONCLUSÃO (4-5 linhas):
       - [Retomada da tese] + [Proposta de intervenção detalhada: agente, ação, modo, efeito] + [Analogia simples]
-      - Exemplo: "Fica claro que ciência precisa ser acessível. O MEC deve criar aulas práticas, com vídeos educativos, pra incluir todos. Tipo uma receita simples."
+      - Exemplo: "Fica claro que ciência precisa ser acessível. O MEC deve criar projetos educativos, com oficinas práticas, pra incluir todos. Tipo uma semente que cresce com cuidado."
 
       ▼ ORIENTAÇÕES GERAIS
       - Gênero textual: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
@@ -69,7 +72,7 @@ const HUMAN_WRITER_PRO = {
 
       Exemplo de formato:
       TÍTULO: Ciência ao alcance
-      TEXTO: Nos últimos tempos, a ciência vem virando alvo...
+      TEXTO: A coletânea diz que "teorias são propostas e novas tecnologias são desenvolvidas"...
 
       Gere o texto completo com coesão e progressão clara de ideias. Evite qualquer marca de inteligência artificial ou inconsistência gramatical. Adote o estilo de um aluno nota 1000, com ritmo de escrita realista.
     `;
@@ -165,7 +168,7 @@ async function getAiResponse(prompt, modelIndex = 0) {
   }
 }
 
-function showNotification(message, progress) {
+function showNotification(message, progress, persistent = false) {
   let notification = document.querySelector('.hck-notification');
   if (!notification) {
     notification = document.createElement('div');
@@ -177,21 +180,23 @@ function showNotification(message, progress) {
       transform: translateX(-50%);
       background: rgba(37, 37, 37, 0.9);
       color: #fff;
-      padding: 10px 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(8px);
       z-index: 10001;
-      font-size: 14px;
+      font-size: 13px;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       transition: opacity 0.3s ease;
     `;
     document.body.appendChild(notification);
   }
 
-  notification.textContent = `${message} - ${progress}%`;
+  notification.textContent = `${message}${progress !== undefined ? ` - ${progress}%` : ''}`;
   notification.style.opacity = '1';
-  setTimeout(() => (notification.style.opacity = '0'), 2000);
+  if (!persistent) {
+    setTimeout(() => (notification.style.opacity = '0'), 2000);
+  }
 }
 
 async function adjustTextIfAiDetected(text, essayInfo) {
@@ -303,40 +308,6 @@ async function checkAiScore(text) {
   return parseInt(score, 10) || 50;
 }
 
-async function clearTitle() {
-  showNotification('Limpando título', 10);
-
-  const allTextareas = document.querySelectorAll('textarea');
-  if (allTextareas.length === 0) {
-    showNotification('Nenhum campo de título encontrado', 0);
-    return;
-  }
-
-  const firstTextarea = allTextareas[0]?.parentElement;
-  if (firstTextarea && (await hackMUITextarea(firstTextarea, ''))) {
-    showNotification('Título limpo', 100);
-  } else {
-    showNotification('Erro ao limpar título', 0);
-  }
-}
-
-async function clearText() {
-  showNotification('Limpando texto', 10);
-
-  const allTextareas = document.querySelectorAll('textarea');
-  if (allTextareas.length < 2) {
-    showNotification('Nenhum campo de texto encontrado', 0);
-    return;
-  }
-
-  const lastTextarea = allTextareas[allTextareas.length - 1]?.parentElement;
-  if (lastTextarea && (await hackMUITextarea(lastTextarea, ''))) {
-    showNotification('Texto limpo', 100);
-  } else {
-    showNotification('Erro ao limpar texto', 0);
-  }
-}
-
 async function clearAll() {
   showNotification('Limpando tudo', 10);
 
@@ -366,6 +337,27 @@ async function clearAll() {
   }
 }
 
+async function copyText() {
+  showNotification('Copiando texto', 10);
+
+  const allTextareas = document.querySelectorAll('textarea');
+  if (allTextareas.length < 2) {
+    showNotification('Nenhum texto encontrado', 0);
+    return;
+  }
+
+  const lastTextarea = allTextareas[allTextareas.length - 1];
+  const textToCopy = lastTextarea.value;
+
+  try {
+    await navigator.clipboard.writeText(textToCopy);
+    showNotification('Texto copiado', 100);
+  } catch (error) {
+    console.error('[copyText] Erro ao copiar texto:', error);
+    showNotification('Erro ao copiar texto', 0);
+  }
+}
+
 async function generateEssay() {
   const activityElement = document.querySelector(
     'p.MuiTypography-root.MuiTypography-body1.css-m576f2'
@@ -387,7 +379,7 @@ async function generateEssay() {
   try {
     let { title, text } = await generateAndAdaptEssay(theme, essayInfo);
 
-    // Nova etapa: Verificar probabilidade de ser IA
+    // Verificar probabilidade de ser IA
     let aiScore = await checkAiScore(text);
     showNotification(`Probabilidade de ser IA: ${aiScore}%`, 80);
 
@@ -423,7 +415,8 @@ async function generateEssay() {
       return;
     }
 
-    showNotification(`Concluído: ${100 - aiScore}% humano`, 100);
+    // Exibir notificação persistente com a porcentagem de ser IA
+    showNotification(`Concluído. Probabilidade de ser IA: ${aiScore}%`, undefined, true);
   } catch (error) {
     console.error('[generateEssay] Erro:', error);
     showNotification('Erro ao gerar redação', 0);
@@ -438,6 +431,5 @@ document.head.appendChild(script);
 
 console.log('[HCK REDAÇÃO] Iniciado!');
 window.generateEssay = generateEssay;
-window.clearTitle = clearTitle;
-window.clearText = clearText;
 window.clearAll = clearAll;
+window.copyText = copyText;
