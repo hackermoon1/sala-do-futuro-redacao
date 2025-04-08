@@ -21,14 +21,14 @@ const HUMAN_WRITER_PRO = {
       Escreva uma redação ENEM no formato **dissertativo-argumentativo**, com linguagem formal, mas acessível, imitando o estilo de um aluno nota 1000 do ensino médio. Priorize fluidez textual, coesão argumentativa e um tom natural, como se fosse escrita por um estudante jovem e engajado. Siga as instruções abaixo:
 
       ▼ ESTILO PERSONALIZADO
-      - Título direto (3-4 palavras) que dialogue com o tema, com apenas a primeira letra da primeira palavra em maiúscula (ex.: "Ciência para todos").
+      - Título criativo e impactante (3-4 palavras) que dialogue com o tema, com apenas a primeira letra da primeira palavra em maiúscula (ex.: "Ciência ao alcance").
       - Frases curtas e médias, com no máximo 18 palavras.
       - Use apenas aspas " ", vírgula "," e ponto "." como pontuação. Proíba o uso de parênteses "()", exclamação "!" e interrogação "?".
       - Inclua 1 erro ortográfico sutil a cada 2 parágrafos (ex.: "pra" no lugar de "para").
       - Linguagem formal, mas com 2-3 expressões coloquiais controladas (ex.: "vem passando por", "é fato", "aí não tem jeito", "não à toa", "tipo").
       - Não invente dados numéricos. Use informações qualitativas ou baseadas na coletânea fornecida.
 
-      ▼ ESTRUTURA HUMANIZADA
+      ▼ ESTRUTURA HUMANIZADA (OBRIGATÓRIA)
       INTRODUÇÃO (4-5 linhas):
       - [Contexto atual] + [Problema específico] + [Tese simplificada]
       - Exemplo: "Nos últimos tempos, a ciência vem virando alvo. Muitos duvidam dela. Diante disso, é preciso ensinar ciência de forma clara."
@@ -43,16 +43,17 @@ const HUMAN_WRITER_PRO = {
       - [Contraste] + [Falha sistêmica] + [Consequência]
       - Exemplo: "Mas o problema não é só do povo. O governo não investe em educação. Resultado, a ciência fica distante."
 
-      CONCLUSÃO (4 linhas):
-      - [Retomada da tese] + [Ação concreta] + [Analogia simples]
-      - Exemplo: "Fica claro que ciência precisa ser acessível. O MEC deve criar aulas práticas, como uma receita simples."
+      CONCLUSÃO (4-5 linhas):
+      - [Retomada da tese] + [Proposta de intervenção detalhada: agente, ação, modo, efeito] + [Analogia simples]
+      - Exemplo: "Fica claro que ciência precisa ser acessível. O MEC deve criar aulas práticas, com vídeos educativos, pra incluir todos. Tipo uma receita simples."
 
       ▼ ORIENTAÇÕES GERAIS
       - Gênero textual: "${essayInfo.generoTextual || "dissertativo-argumentativo"}"
       - Tema: "${essayInfo.enunciado.split(' ').slice(0, 7).join(' ')}"
       - Coletânea (resumo): "${essayInfo.coletanea.substring(0, 150)}..."
       - Critérios de avaliação: "${essayInfo.criteriosAvaliacao}"
-      - Use a coletânea para embasar os argumentos, como o "bombardeio de notícias falsas sobre as vacinas" e a desconfiança de parte da população.
+      - Use a coletânea para embasar os argumentos, como "teorias são propostas e novas tecnologias são desenvolvidas" e "ciência seja valorizada, respeitada e acessível a todos".
+      - O texto deve ter cerca de 2400 caracteres (mínimo 1800, máximo 3080).
 
       ▼ EVITE (PARA PARECER HUMANO):
       - Frases clichês: "É notório que", "Pode-se dizer que", "Na minha escola."
@@ -67,7 +68,7 @@ const HUMAN_WRITER_PRO = {
       TEXTO: [O texto da redação, entre 28 e 32 linhas, ~2400 caracteres, margem 1800 a 3080]
 
       Exemplo de formato:
-      TÍTULO: Ciência para todos
+      TÍTULO: Ciência ao alcance
       TEXTO: Nos últimos tempos, a ciência vem virando alvo...
 
       Gere o texto completo com coesão e progressão clara de ideias. Evite qualquer marca de inteligência artificial ou inconsistência gramatical. Adote o estilo de um aluno nota 1000, com ritmo de escrita realista.
@@ -193,6 +194,32 @@ function showNotification(message, progress) {
   setTimeout(() => (notification.style.opacity = '0'), 2000);
 }
 
+async function adjustTextIfAiDetected(text, essayInfo) {
+  const adjustPrompt = `
+    Ajuste o texto abaixo para torná-lo mais humano e menos detectável como IA, seguindo estas orientações:
+    - Reduza repetições de palavras ou ideias.
+    - Simplifique o vocabulário, usando palavras que um estudante do ensino médio usaria.
+    - Aumente o uso da coletânea fornecida para embasar os argumentos.
+    - Garanta que a proposta de intervenção seja detalhada (agente, ação, modo, efeito).
+    - Mantenha o tom formal, mas acessível, com 2-3 expressões coloquiais controladas (ex.: "não à toa", "aí não tem jeito").
+    - Mantenha o texto entre 1800 e 3080 caracteres, com cerca de 2400 caracteres.
+    - Use apenas aspas " ", vírgula "," e ponto "." como pontuação.
+
+    Coletânea (resumo): "${essayInfo.coletanea.substring(0, 150)}..."
+    Texto: "${text}"
+
+    Retorne o texto ajustado no mesmo formato:
+    TÍTULO: [Título]
+    TEXTO: [Texto ajustado]
+  `;
+
+  const adjustedText = await getAiResponse(adjustPrompt);
+  const adjustedTitle = adjustedText.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
+  const adjustedEssayText = adjustedText.split('TEXTO:')[1].trim();
+
+  return { title: adjustedTitle, text: adjustedEssayText };
+}
+
 async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
   const maxAttempts = 3;
   const prompt = HUMAN_WRITER_PRO.generatePrompt(essayInfo);
@@ -223,7 +250,7 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
     let essayTitle = essay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
     let essayText = essay.split('TEXTO:')[1].trim();
 
-    // Garantir que o título siga o formato "Ciência para todos"
+    // Garantir que o título siga o formato "Ciência ao alcance"
     essayTitle = essayTitle.split(' ').map((word, index) => 
       index === 0 ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word.toLowerCase()
     ).join(' ');
@@ -233,9 +260,10 @@ async function generateAndAdaptEssay(theme, essayInfo, attempt = 1) {
 
     // Verificação de tamanho (caracteres e linhas)
     const lines = essayText.split('\n').length;
+    const targetLength = 2400;
     if (essayText.length < 1800 || lines < 28) {
       const additionalPrompt = `
-        Expanda o texto abaixo para garantir que tenha pelo menos 1800 caracteres e 28 linhas, mantendo o tom acessível e objetivo, e seguindo as mesmas regras de estrutura e humanização:
+        Expanda o texto abaixo para que tenha cerca de ${targetLength} caracteres e 28-32 linhas, mantendo o tom acessível e objetivo, e seguindo as mesmas regras de estrutura e humanização:
         Texto: "${essayText}"
       `;
       essayText = await getAiResponse(additionalPrompt);
@@ -259,16 +287,14 @@ async function checkAiScore(text) {
   showNotification('Verificando autenticidade', 70);
 
   const detectorPrompt = `
-    Analise o texto abaixo e estime a probabilidade (%) de ser IA, com base nestas categorias:
-    - **Repetições**: Uso excessivo de palavras ou frases.
-    - **Pontuação**: Uso de "!" ou "?", mais de 1 vírgula por frase, presença de travessões/parentêses, falta de ponto-e-vírgula.
-    - **Estrutura**: Frases longas, falta de frases ultra-curtas, ausência de variação entre períodos simples e compostos.
-    - **Vocabulário**: Gírias pesadas (ex.: "mano", "né") ou termos complexos sem explicação.
-    - **Conteúdo**: Generalizações vagas (ex.: "entender o mundo"), dados não mencionados, falta de argumentos objetivos.
-    - **Plágio**: Similaridade com textos conhecidos de IA ou falta de originalidade.
-    - **Formato**: Presença de tags HTML (ex.: <p>, <strong>) ou formatação inadequada.
-    - **Tom**: Uso de tom conversacional excessivo (ex.: "a gente", "virar esse jogo") ou tom robótico.
-    - **Padrões humanos**: Falta de frases ultra-curtas, variação de períodos, ou linguagem com níveis de formalidade.
+    Analise o texto abaixo e estime a probabilidade (%) de ser IA, com base nestes critérios:
+    - **Repetições**: Uso excessivo de palavras ou frases (ex.: repetir "ciência" mais de 3 vezes por parágrafo).
+    - **Estrutura**: Frases longas (acima de 18 palavras), falta de variação entre frases curtas e médias.
+    - **Vocabulário**: Uso de termos rebuscados (ex.: "neglacionismo", "letramento") ou gírias pesadas (ex.: "mano").
+    - **Tom**: Tom excessivamente formal ou conversacional (ex.: "a gente", "virar esse jogo").
+    - **Coletânea**: Falta de uso da coletânea para embasar os argumentos.
+    - **Proposta de Intervenção**: Ausência de uma proposta detalhada (agente, ação, modo, efeito).
+    - **Padrões de IA**: Generalizações vagas (ex.: "ciência ajuda a sociedade"), repetições de estrutura (ex.: começar todas as frases com "Além disso").
     - Retorne apenas um número entre 0 e 100 (0 = humano, 100 = IA).
     Texto: "${text}"
   `;
@@ -359,13 +385,23 @@ async function generateEssay() {
   const theme = essayInfo.enunciado.split(' ').slice(0, 5).join(' ');
 
   try {
-    const { title, text } = await generateAndAdaptEssay(theme, essayInfo);
+    let { title, text } = await generateAndAdaptEssay(theme, essayInfo);
 
-    const initialScore = await checkAiScore(text);
-    showNotification(`Inicial: ${initialScore}% IA`, 80);
+    // Nova etapa: Verificar probabilidade de ser IA
+    let aiScore = await checkAiScore(text);
+    showNotification(`Probabilidade de ser IA: ${aiScore}%`, 80);
 
-    const finalScore = await checkAiScore(text);
-    showNotification(`Final: ${finalScore}% IA`, 90);
+    // Se a probabilidade for maior que 50%, ajustar o texto
+    if (aiScore > 50) {
+      showNotification('Ajustando texto para parecer mais humano', 85);
+      const adjustedResult = await adjustTextIfAiDetected(text, essayInfo);
+      title = adjustedResult.title;
+      text = adjustedResult.text;
+
+      // Verificar novamente após o ajuste
+      aiScore = await checkAiScore(text);
+      showNotification(`Nova probabilidade de ser IA: ${aiScore}%`, 90);
+    }
 
     showNotification('Inserindo título', 95);
     const allTextareas = document.querySelectorAll('textarea');
@@ -387,7 +423,7 @@ async function generateEssay() {
       return;
     }
 
-    showNotification(`Concluído: ${100 - finalScore}% humano`, 100);
+    showNotification(`Concluído: ${100 - aiScore}% humano`, 100);
   } catch (error) {
     console.error('[generateEssay] Erro:', error);
     showNotification('Erro ao gerar redação', 0);
