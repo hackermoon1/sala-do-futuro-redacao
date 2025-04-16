@@ -1,7 +1,7 @@
 (async () => {
 
     const config = {
-        API_KEY: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ', // Substitua pela sua chave ou método seguro
+        API_KEY: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ',
         GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
         GEMINI_MODELS: [
             'gemini-2.0-flash:generateContent',
