@@ -1,7 +1,7 @@
 (async () => {
 
     const config = {
-        API_KEY: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ',
+        API_KEY: 'AIzaSyBwEiziXQ79LP7IKq93pmLM8b3qnwXn6bQ', // Substitua pela sua chave ou método seguro
         GEMINI_API_BASE: 'https://generativelanguage.googleapis.com/v1beta/models/',
         GEMINI_MODELS: [
             'gemini-2.0-flash:generateContent',
@@ -242,56 +242,93 @@ TEXTO: [Texto da redação REFINADO]
         const hckButton = document.getElementById('hck-btn-generate');
         if (hckButton) hckButton.disabled = true;
         try {
-            const activityElement = document.querySelector('p.MuiTypography-root.MuiTypography-body1');
-            if (!activityElement?.textContent?.toLowerCase().includes('redação')) {
-                showNotification('Página não parece ser de redação.', 'error', 4000);
-                if (hckButton) hckButton.disabled = false;
-                return;
-            }
+            const isEditorPresent = !!document.querySelector('.ql-editor');
+            const pageTitleElement = document.querySelector('p.MuiTypography-root.MuiTypography-body1.css-m576f2');
+            const urlPathRelevant = window.location.pathname.toLowerCase().includes('/atividade/');
+
+            if (!isEditorPresent || !(pageTitleElement || urlPathRelevant)) {
+                 showNotification('Página não parece ser de redação (v3).', 'error', 4000);
+                 if (hckButton) hckButton.disabled = false;
+                 return;
+             }
+
             showNotification('Coletando informações...', 'info', 2000);
-            const essayInfo = {
-                coletanea: document.querySelector('.coletanea-container')?.innerText || document.querySelector('[data-testid="coletanea"]')?.innerText || document.querySelector('.css-1pvvm3t')?.innerText || '',
-                enunciado: document.querySelector('.enunciado-container')?.innerText || document.querySelector('.ql-editor')?.innerText || document.querySelector('.css-1cq7p20')?.innerText || '',
-                generoTextual: document.querySelector('.genero-textual')?.innerText || 'dissertativo-argumentativo',
-                criteriosAvaliacao: document.querySelector('.criterios-avaliacao')?.innerText || document.querySelector('.css-kf35ou .ql-editor')?.innerHTML || ''
+
+             const essayInfo = {
+                coletanea: pageTitleElement?.textContent ||
+                           document.querySelector('.coletanea-container')?.innerText ||
+                           document.querySelector('[data-testid="coletanea"]')?.innerText ||
+                           '',
+                enunciado: document.querySelector('.css-1pvvm3t')?.innerText ||
+                           document.querySelector('.enunciado-container')?.innerText ||
+                           document.querySelector('.ql-editor')?.innerText ||
+                           '',
+                generoTextual: document.querySelector('.css-1cq7p20')?.innerText ||
+                               document.querySelector('.genero-textual')?.innerText ||
+                              'dissertativo-argumentativo',
+                criteriosAvaliacao: document.querySelector('.ql-align-justify')?.innerText ||
+                                    document.querySelector('.criterios-avaliacao')?.innerText ||
+                                    document.querySelector('.css-kf35ou .ql-editor')?.innerHTML ||
+                                    ''
             };
+
             essayInfo.enunciado = essayInfo.enunciado.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
             essayInfo.coletanea = essayInfo.coletanea.replace(/\s+/g, ' ').trim();
             essayInfo.criteriosAvaliacao = essayInfo.criteriosAvaliacao.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-            if (!essayInfo.enunciado) {
-                showNotification('Enunciado não encontrado.', 'error', 4000);
+
+            if (!essayInfo.enunciado && !essayInfo.coletanea) {
+                showNotification('Enunciado/Coletânea não encontrados.', 'error', 4000);
                 if (hckButton) hckButton.disabled = false;
                 return;
             }
+
             const { title, text, aiScore } = await generateAndAdaptEssay(essayInfo);
             const allTextareas = document.querySelectorAll('textarea');
-            if (allTextareas.length < 2) {
-                showNotification('Campos de título/texto não encontrados.', 'error', 4000);
-                if (hckButton) hckButton.disabled = false;
-                return;
+
+            if (allTextareas.length === 0) {
+                 showNotification('Nenhum campo de texto encontrado.', 'error', 4000);
+                 if (hckButton) hckButton.disabled = false;
+                 return;
             }
-            const titleTextareaContainer = allTextareas[0]?.closest('div.MuiFormControl-root') || allTextareas[0]?.parentElement;
-            const essayTextareaContainer = allTextareas[allTextareas.length - 1]?.closest('div.MuiFormControl-root') || allTextareas[allTextareas.length - 1]?.parentElement;
-            showNotification('Inserindo título...', 'info', 1500);
-            let titleSuccess = false;
+
+            let titleTextareaContainer = null;
+            let essayTextareaContainer = null;
+
+            if (allTextareas.length > 1) {
+                 titleTextareaContainer = allTextareas[0]?.closest('div.MuiFormControl-root') || allTextareas[0]?.parentElement;
+                 essayTextareaContainer = allTextareas[allTextareas.length - 1]?.closest('div.MuiFormControl-root') || allTextareas[allTextareas.length - 1]?.parentElement;
+            } else {
+                 essayTextareaContainer = allTextareas[0]?.closest('div.MuiFormControl-root') || allTextareas[0]?.parentElement;
+            }
+
+
             if (titleTextareaContainer) {
-                titleSuccess = await hackMUITextarea(titleTextareaContainer, title);
-            }
-            if (!titleSuccess) {
-                showNotification('Falha ao inserir título.', 'warning', 3000);
-            }
-            await new Promise(resolve => setTimeout(resolve, 100));
-            showNotification('Inserindo redação...', 'info', 1500);
-            let textSuccess = false;
-            if (essayTextareaContainer) {
-                textSuccess = await hackMUITextarea(essayTextareaContainer, text);
-            }
-            if (!textSuccess) {
-                showNotification('Falha ao inserir texto.', 'error', 4000);
-                if (hckButton) hckButton.disabled = false;
-                return;
-            }
-            showNotification(`Concluído! (IA: ${aiScore}%)`, 'success', 0);
+                showNotification('Inserindo título...', 'info', 1500);
+                let titleSuccess = await hackMUITextarea(titleTextareaContainer, title);
+                 if (!titleSuccess) {
+                    showNotification('Falha ao inserir título.', 'warning', 3000);
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+            } else if (allTextareas.length > 1) {
+                 showNotification('Campo de título não encontrado, pulando.', 'warning', 2000);
+             }
+
+
+             if (essayTextareaContainer) {
+                 showNotification('Inserindo redação...', 'info', 1500);
+                 let textSuccess = await hackMUITextarea(essayTextareaContainer, text);
+                 if (!textSuccess) {
+                     showNotification('Falha ao inserir texto da redação.', 'error', 4000);
+                     if (hckButton) hckButton.disabled = false;
+                     return;
+                 }
+                 showNotification(`Concluído! (IA: ${aiScore}%)`, 'success', 0);
+             } else {
+                 showNotification('Campo de texto da redação não encontrado.', 'error', 4000);
+                 if (hckButton) hckButton.disabled = false;
+                 return;
+             }
+
         } catch (error) {
             showNotification(`Erro fatal: ${error.message}`, 'error', 5000);
         } finally {
@@ -323,10 +360,10 @@ TEXTO: [Texto da redação REFINADO]
     async function actionCopyText() {
         showNotification('Copiando texto...', 'info', 1500);
         const allTextareas = document.querySelectorAll('textarea');
-        if (allTextareas.length < 2) {
-            showNotification('Campo de redação não encontrado.', 'warning', 3000);
-            return;
-        }
+         if (allTextareas.length === 0) {
+             showNotification('Nenhum campo de texto encontrado.', 'warning', 3000);
+             return;
+         }
         const lastTextarea = allTextareas[allTextareas.length - 1];
         const textToCopy = lastTextarea.value;
         if (!textToCopy) {
@@ -352,9 +389,9 @@ TEXTO: [Texto da redação REFINADO]
 #hck-menu-toggle-ios:active { transform: scale(0.95); filter: brightness(0.9); }
 #hck-menu-ios { position: fixed; bottom: 75px; right: 20px; background-color: var(--hck-menu-bg); backdrop-filter: blur(var(--hck-menu-blur)); -webkit-backdrop-filter: blur(var(--hck-menu-blur)); border-radius: var(--hck-border-radius); box-shadow: var(--hck-menu-shadow); padding: 12px; z-index: 10000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; color: var(--hck-text-color); min-width: 180px; display: flex; flex-direction: column; gap: 8px; opacity: 0; transform: translateY(15px) scale(0.95); transform-origin: bottom right; transition: opacity 0.3s cubic-bezier(0.25, 1, 0.5, 1), transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
 #hck-menu-ios.visible { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
-#hck-menu-ios-header { display: flex; justify-content: space-between; align-items: center; padding: 0 4px 4px 4px; border-bottom: 1px solid rgba(128, 128, 128, 0.2); margin-bottom: 4px; }
-#hck-menu-ios-title { font-size: 16px; font-weight: 600; }
-#hck-menu-ios-close { font-size: 18px; font-weight: normal; color: var(--hck-close-color); cursor: pointer; padding: 2px 6px; border-radius: 50%; line-height: 1; transition: background-color 0.2s ease; }
+#hck-menu-ios-header { position: relative; display: flex; align-items: center; padding-bottom: 8px; border-bottom: 1px solid rgba(128, 128, 128, 0.2); margin-bottom: 4px; }
+#hck-menu-ios-title { flex-grow: 1; text-align: center; font-size: 16px; font-weight: 600; margin: 0 20px; }
+#hck-menu-ios-close { position: absolute; top: -2px; right: -2px; font-size: 18px; font-weight: normal; color: var(--hck-close-color); cursor: pointer; padding: 2px 6px; border-radius: 50%; line-height: 1; transition: background-color 0.2s ease; }
 #hck-menu-ios-close:hover { background-color: rgba(128, 128, 128, 0.15); }
 #hck-menu-ios-close:active { background-color: rgba(128, 128, 128, 0.3); }
 .hck-menu-button { background-color: var(--hck-button-bg); color: var(--hck-text-color); border: none; border-radius: 10px; padding: 10px 12px; width: 100%; font-size: 14px; font-weight: 500; text-align: left; cursor: pointer; transition: background-color 0.15s ease, transform 0.1s ease; display: flex; align-items: center; gap: 8px; }
