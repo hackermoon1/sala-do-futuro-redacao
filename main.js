@@ -11,7 +11,7 @@
 
     const HUMAN_WRITER_PRO = {
         API_SETTINGS: {
-            temperature: 0.75,
+            temperature: 0.75, // Mantido, mas pode ser reduzido (ex: 0.7) se a aleatoriedade persistir
             topP: 0.85,
             maxOutputTokens: 3000
         },
@@ -27,30 +27,37 @@
             const safeCriterios = essayInfo.criteriosAvaliacao.substring(0, 500);
 
             return `
-**Tarefa:** Aja como um estudante do ensino médio brasileiro, muito dedicado e que tira nota 1000 no ENEM. Escreva uma redação **dissertativo-argumentativa** sobre o tema proposto, seguindo RIGOROSAMENTE as instruções abaixo para soar natural e humana.
-**Tema Central:** "${safeEnunciado}..." (Use a coletânea para entender o tema completo)
+**Tarefa:** Aja como um estudante do ensino médio brasileiro, nota 1000 no ENEM. Escreva uma redação **dissertativo-argumentativa** sobre o tema proposto, seguindo RIGOROSAMENTE as instruções abaixo. A prioridade MÁXIMA é o formato de saída.
+
+**Tema Central:** "${safeEnunciado}..."
 **Gênero:** ${essayInfo.generoTextual || "dissertativo-argumentativo"}
-**Coletânea (Resumo para Contexto):** "${safeColetanea}..."
+**Coletânea (Resumo):** "${safeColetanea}..."
 **Critérios Relevantes:** "${safeCriterios}..."
-**▼ DIRETRIZES DE ESTILO E TOM (OBRIGATÓRIO - Simular Escrita Humana Jovem e Engajada):**
-1.  **Título:** Crie um título curto (3-4 palavras), criativo e relacionado ao tema. Apenas a primeira letra da primeira palavra deve ser maiúscula (ex: "Caminhos da ciência", "Voz para todos").
-2.  **Linguagem:** Formal, porém acessível e dinâmica. Use vocabulário compatível com um excelente aluno de ensino médio (evite jargões complexos como "hodiernamente", "salutar", "precípuo", "mitigar", "intrínseco", "paradigma").
-3.  **Fluidez:** Varie o tamanho das frases (curtas e médias, MÁXIMO 18 palavras). Alterne entre frases mais reflexivas e outras mais diretas para criar ritmo. Garanta transições suaves entre parágrafos.
-4.  **Pontuação:** Use APENAS vírgula (,), ponto (.) e aspas (" "). **PROIBIDO:** Parênteses (), exclamação (!), interrogação (?), ponto e vírgula (;), travessão (—).
-5.  **Coloquialismo Controlado:** Inclua 2-3 expressões coloquiais comuns de forma natural (ex: "é fato que", "vem ganhando força", "não é à toa", "acaba sendo", "tipo assim" - use com MUITA moderação). Evite gírias pesadas ("mano", "top", "rolê").
-6.  **Erro Sutil (Opcional, se conseguir fazer naturalmente):** Inclua *no máximo um* erro ortográfico ou de concordância muito sutil e comum (ex: "pra" em vez de "para", "mecher" em vez de "mexer", "haveram" em vez de "haverá"). Se não parecer natural, NÃO inclua.
-7.  **Coletânea:** Use trechos ou ideias da coletânea de forma integrada aos argumentos, sem simplesmente copiar. Cite a origem de forma indireta (ex: "Como aponta um dos textos de apoio...", "A coletânea menciona que..."). **NÃO invente dados numéricos.** Baseie-se nas informações qualitativas fornecidas.
-8.  **Conhecimento:** Demonstre bom conhecimento do tema, mas compatível com a visão de mundo de um estudante (foco em impactos sociais, ambientais, educacionais, etc.).
-**▼ ESTRUTURA DETALHADA (OBRIGATÓRIA - Divida claramente):**
-*   **INTRODUÇÃO (4-5 linhas):** Contextualize o tema usando uma ideia ou dado da coletânea de forma interessante. Apresente a problemática de forma clara e envolvente. Declare a tese de forma objetiva no final.
-*   **DESENVOLVIMENTO 1 (Argumento Principal 1 - 8-9 linhas):** Tópico frasal. Fundamentação com coletânea. Aprofundamento com exemplos/causas/consequências. (Possível local para erro sutil).
-*   **DESENVOLVIMENTO 2 (Argumento Principal 2 - 8-9 linhas):** Tópico frasal. Fundamentação (coletânea/conhecimento geral). Aprofundamento e relevância.
-*   **CONCLUSÃO (Proposta de Intervenção - 4-5 linhas):** Retome a tese. Proposta COMPLETA (Agente, Ação, Meio/Modo, Finalidade/Efeito - DETALHADOS). Fechamento com frase curta/analogia.
-**▼ EVITAR ABSOLUTAMENTE (Para não parecer IA):** Clichês ("É notório que..."). Repetições excessivas. Voz passiva excessiva. Generalizações vagas. Estruturas repetitivas. Tom robótico. Listas/Marcadores.
-**▼ FORMATO DE SAÍDA (OBRIGATÓRIO - Siga EXATAMENTE):** Texto entre ${HUMAN_WRITER_PRO.MIN_CHARS} e ${HUMAN_WRITER_PRO.MAX_CHARS} caracteres e ${HUMAN_WRITER_PRO.MIN_LINES} e ${HUMAN_WRITER_PRO.MAX_LINES} linhas. Retorne APENAS neste formato:
-TÍTULO: [Título com 3-4 palavras, primeira letra da primeira palavra maiúscula]
-TEXTO: [Texto da redação completo aqui, seguindo todas as regras]
-**Instrução Final:** Gere a redação completa. Verifique se todas as regras foram cumpridas.
+
+**▼ DIRETRIZES DE ESTILO E TOM (OBRIGATÓRIO):**
+1.  **Título:** Crie um título curto (3-4 palavras), criativo. Apenas a primeira letra da primeira palavra maiúscula (ex: "Caminhos da ciência").
+2.  **Linguagem:** Formal, porém acessível e dinâmica, vocabulário de bom aluno de ensino médio (evite "hodiernamente", "salutar", "precípuo", "mitigar").
+3.  **Fluidez:** Frases curtas/médias (MÁXIMO 18 palavras), varie o ritmo. Transições suaves.
+4.  **Pontuação:** Use APENAS vírgula (,), ponto (.) e aspas (" "). **PROIBIDO:** (), !, ?, ;, —.
+5.  **Coloquialismo Controlado:** Inclua 2-3 expressões coloquiais comuns de forma natural (ex: "é fato que", "não é à toa", "acaba sendo"). Evite gírias.
+6.  **Coletânea:** Use ideias da coletânea nos argumentos, citando indiretamente ("A coletânea menciona...", "Um dos textos de apoio diz..."). **NÃO invente dados numéricos.**
+7.  **Conhecimento:** Compatível com visão de estudante (impactos sociais, educacionais).
+
+**▼ ESTRUTURA DETALHADA (OBRIGATÓRIA):**
+*   **INTRODUÇÃO (4-5 linhas):** Contextualize com coletânea. Apresente problema. Tese objetiva no final.
+*   **DESENVOLVIMENTO 1 (8-9 linhas):** Tópico frasal. Fundamentação (coletânea/paráfrase). Aprofundamento (exemplos/causas/consequências).
+*   **DESENVOLVIMENTO 2 (8-9 linhas):** Tópico frasal. Fundamentação (coletânea/conhecimento geral). Aprofundamento e relevância.
+*   **CONCLUSÃO (4-5 linhas):** Retome tese. Proposta COMPLETA (Agente, Ação, Meio/Modo, Finalidade/Efeito - DETALHADOS). Fechamento curto.
+
+**▼ EVITAR ABSOLUTAMENTE:** Clichês ("É notório que..."). Repetições excessivas. Voz passiva excessiva. Generalizações vagas. Estruturas repetitivas. Tom robótico. Listas/Marcadores.
+
+**▼ FORMATO DE SAÍDA (PRIORIDADE MÁXIMA - Siga EXATAMENTE):**
+*   Texto entre ${HUMAN_WRITER_PRO.MIN_CHARS} e ${HUMAN_WRITER_PRO.MAX_CHARS} caracteres, ${HUMAN_WRITER_PRO.MIN_LINES} e ${HUMAN_WRITER_PRO.MAX_LINES} linhas.
+*   Retorne APENAS o título e o texto, neste formato exato, sem NADA antes ou depois:
+TÍTULO: [Título aqui]
+TEXTO: [Texto da redação completo aqui]
+
+**Instrução Final:** Gere a redação completa seguindo TODAS as regras, especialmente o FORMATO DE SAÍDA. Sua resposta DEVE começar EXATAMENTE com 'TÍTULO:' e conter 'TEXTO:'. Não inclua NENHUMA outra palavra, explicação ou formatação fora desses marcadores.
 `;
         }
     };
@@ -99,7 +106,14 @@ TEXTO: [Texto da redação completo aqui, seguindo todas as regras]
                         temperature: HUMAN_WRITER_PRO.API_SETTINGS.temperature,
                         topP: HUMAN_WRITER_PRO.API_SETTINGS.topP,
                         maxOutputTokens: HUMAN_WRITER_PRO.API_SETTINGS.maxOutputTokens
-                    }
+                    },
+                    // Adicionando configurações de segurança para bloquear menos (Use com cautela)
+                    safetySettings: [
+                        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+                        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" },
+                    ]
                 })
             });
             if (!response.ok) {
@@ -107,21 +121,39 @@ TEXTO: [Texto da redação completo aqui, seguindo todas as regras]
                 throw new Error(`Erro na API (${model}): ${response.status} ${errorData}`);
             }
             const data = await response.json();
-            if (!data.candidates || data.candidates.length === 0) {
-                if (data.promptFeedback?.blockReason) {
-                    throw new Error(`API bloqueou (${model}): ${data.promptFeedback.blockReason}`);
-                } else {
-                    throw new Error(`Resposta inválida da API (${model})`);
-                }
-            }
+
+            // Verifica bloqueio mesmo com safetySettings=NONE (pode ocorrer por outros motivos)
+             if (!data.candidates || data.candidates.length === 0) {
+                 if (data.promptFeedback?.blockReason) {
+                     throw new Error(`API bloqueou (${model}): ${data.promptFeedback.blockReason}`);
+                 } else {
+                     // Verifica se há texto em 'finishReason: OTHER' que pode ser útil
+                     const finishReason = data.candidates?.[0]?.finishReason;
+                     const safetyRatings = data.candidates?.[0]?.safetyRatings;
+                     console.warn(`[API Warning] Resposta vazia ou bloqueada (${model}). FinishReason: ${finishReason}`, safetyRatings);
+                     // Tenta extrair algo se for OTHER, senão lança erro
+                     if(finishReason === 'OTHER') {
+                         console.warn("Tentando extrair texto de resposta parcial (finishReason: OTHER)");
+                         // Esta parte é especulativa, a estrutura exata pode variar
+                         const partialText = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                         if (partialText) return partialText; // Retorna o que tiver
+                     }
+                     throw new Error(`Resposta inválida ou vazia da API (${model})`);
+                 }
+             }
+
+
             if (!data.candidates[0]?.content?.parts?.[0]?.text) {
-                throw new Error(`Estrutura de resposta inesperada (${model})`);
+                 // Se chegou aqui sem texto, algo está estranho
+                console.error(`[API Error] Estrutura de resposta inesperada ou sem texto (${model}):`, data);
+                throw new Error(`Estrutura de resposta inesperada ou sem texto (${model})`);
             }
             const text = data.candidates[0].content.parts[0].text;
             return text;
         } catch (error) {
             console.error(`[API Exception] Erro ao chamar ${model}:`, error);
             if (modelIndex < config.GEMINI_MODELS.length - 1) {
+                 showNotification(`Erro no modelo ${model.split(':')[0]}, tentando próximo...`, 'warning', 3000);
                 return await getAiResponse(prompt, modelIndex + 1);
             }
             throw error;
@@ -130,49 +162,61 @@ TEXTO: [Texto da redação completo aqui, seguindo todas as regras]
 
     function showNotification(message, type = 'info', duration = 3000) {
         let notification = document.querySelector('.hck-notification-ios');
-        if (notification) {
-            notification.className = `hck-notification-ios ${type}`;
-            notification.querySelector('.hck-notification-message').textContent = message;
+        if (notification && notification.timer) { // Limpa timer apenas se existir
             clearTimeout(notification.timer);
-        } else {
-            notification = document.createElement('div');
-            notification.className = `hck-notification-ios ${type}`;
-            notification.innerHTML = `<span class="hck-notification-message">${message}</span>`;
-            document.body.appendChild(notification);
-            void notification.offsetWidth;
+            notification.remove(); // Remove imediatamente para nova notificação
         }
+        // Cria a nova notificação
+        notification = document.createElement('div');
+        notification.className = `hck-notification-ios ${type}`;
+        notification.innerHTML = `<span class="hck-notification-message">${message}</span>`;
+        document.body.appendChild(notification);
+        void notification.offsetWidth;
+
         notification.style.opacity = '1';
         notification.style.transform = 'translateY(0)';
+
         if (duration > 0) {
             notification.timer = setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateY(20px)';
-                setTimeout(() => notification.remove(), 300);
+                if (notification) { // Verifica se ainda existe antes de animar/remover
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(20px)';
+                    setTimeout(() => notification.remove(), 300);
+                }
             }, duration);
+        } else {
+            notification.timer = null; // Indica que é persistente
         }
     }
+
 
     async function adjustTextIfAiDetected(originalTitle, originalText, essayInfo, aiScore) {
         showNotification(`Ajustando (IA: ${aiScore}%)`, 'warning', 4000);
         const adjustPrompt = `
 **Tarefa:** Refine o texto da redação abaixo para torná-lo **MAIS HUMANO** e **MENOS DETECTÁVEL como IA**, mantendo a nota 1000 do ENEM. O texto atual foi sinalizado como ${aiScore}% provável de ser IA.
-**Foco do Refinamento:** Naturalidade, Variação, Vocabulário Simples (+ 2-3 coloquialismos sutis), Melhor Integração da Coletânea, Proposta Completa, Um Erro Sutil (se natural). Manter regras originais (pontuação, estrutura, tamanho: ${HUMAN_WRITER_PRO.MIN_CHARS}-${HUMAN_WRITER_PRO.MAX_CHARS} chars, ${HUMAN_WRITER_PRO.MIN_LINES}-${HUMAN_WRITER_PRO.MAX_LINES} linhas).
+**Foco do Refinamento:** Naturalidade, Variação, Vocabulário Simples (+ 2-3 coloquialismos sutis), Melhor Integração da Coletânea, Proposta Completa. Manter regras originais (pontuação, estrutura, tamanho: ${HUMAN_WRITER_PRO.MIN_CHARS}-${HUMAN_WRITER_PRO.MAX_CHARS} chars, ${HUMAN_WRITER_PRO.MIN_LINES}-${HUMAN_WRITER_PRO.MAX_LINES} linhas).
 **Coletânea (Resumo):** "${essayInfo.coletanea.substring(0,500)}..."
 **Texto Original:**
 TÍTULO: ${originalTitle}
 TEXTO: ${originalText}
-**Formato de Saída (OBRIGATÓRIO):**
+**Formato de Saída (OBRIGATÓRIO):** Retorne EXATAMENTE no formato abaixo, sem NADA a mais:
 TÍTULO: [Título refinado ou original]
 TEXTO: [Texto da redação REFINADO]
 `;
         try {
             const adjustedResponse = await getAiResponse(adjustPrompt);
-            if (!adjustedResponse.includes('TÍTULO:') || !adjustedResponse.includes('TEXTO:')) {
-                showNotification('Falha no ajuste (formato), usando original.', 'error');
+            console.log('[Adjust Raw Response]:\n', adjustedResponse); // Log da resposta do ajuste
+
+            const titleMatch = adjustedResponse.match(/TÍTULO:\s*([\s\S]*?)\s*TEXTO:/i);
+            const textMatch = adjustedResponse.match(/TEXTO:\s*([\s\S]*)/i);
+
+            if (!titleMatch || !textMatch || !titleMatch[1] || !textMatch[1]) {
+                showNotification('Falha ao processar ajuste (formato), usando original.', 'error');
                 return { title: originalTitle, text: originalText };
             }
-            const adjustedTitle = adjustedResponse.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
-            const adjustedEssayText = adjustedResponse.split('TEXTO:')[1].trim();
+            const adjustedTitle = titleMatch[1].trim();
+            const adjustedEssayText = textMatch[1].trim();
+
             if (adjustedEssayText.length < HUMAN_WRITER_PRO.MIN_CHARS / 1.5) {
                 showNotification('Falha no ajuste (curto), usando original.', 'error');
                 return { title: originalTitle, text: originalText };
@@ -202,20 +246,28 @@ TEXTO: [Texto da redação REFINADO]
         const prompt = HUMAN_WRITER_PRO.generatePrompt(essayInfo);
         showNotification('Gerando redação...', 'info', 0);
         try {
-            let rawEssay = await getAiResponse(prompt);
+            const rawEssay = await getAiResponse(prompt);
+            console.log('[Raw API Response]:\n', rawEssay); // Log da resposta bruta
             showNotification('Processando texto...', 'info', 3000);
-            if (!rawEssay || !rawEssay.includes('TÍTULO:') || !rawEssay.includes('TEXTO:')) {
-                rawEssay = rawEssay.replace(/TÍTULO:|TEXTO:/gi, '').trim();
-                if (!rawEssay) throw new Error('Resposta da IA vazia.');
-                showNotification('Formato inválido, usando fallback.', 'warning');
-                const fallbackTitle = essayInfo.enunciado.split(' ').slice(0, 3).map((w, i) => i === 0 ? w.charAt(0).toUpperCase() + w.slice(1).toLowerCase() : w.toLowerCase()).join(' ') || "Redação Gerada";
-                return { title: fallbackTitle, text: rawEssay, aiScore: 90 };
+
+            // --- Parsing Robusto ---
+            const titleMatch = rawEssay.match(/TÍTULO:\s*([\s\S]*?)\s*TEXTO:/i);
+            const textMatch = rawEssay.match(/TEXTO:\s*([\s\S]*)/i);
+
+            if (!titleMatch || !textMatch || !titleMatch[1] || !textMatch[1]) {
+                console.error('[Generate] Falha ao parsear TÍTULO/TEXTO da resposta:', rawEssay);
+                showNotification('Erro ao processar resposta da IA (formato T/T).', 'error', 5000);
+                throw new Error('Formato de resposta da IA inválido (TÍTULO/TEXTO não encontrados).');
             }
-            let essayTitle = rawEssay.split('TÍTULO:')[1].split('TEXTO:')[0].trim();
-            let essayText = rawEssay.split('TEXTO:')[1].trim();
+
+            let essayTitle = titleMatch[1].trim();
+            let essayText = textMatch[1].trim();
+            // --- Fim Parsing Robusto ---
+
             essayTitle = essayTitle.split(' ').map((word, index) => index === 0 ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word.toLowerCase()).join(' ');
             const lines = essayText.split('\n').length;
             const chars = essayText.length;
+
             if (chars < HUMAN_WRITER_PRO.MIN_CHARS || lines < HUMAN_WRITER_PRO.MIN_LINES) {
                 showNotification('Texto curto, verifique.', 'warning', 4000);
             } else if (chars > HUMAN_WRITER_PRO.MAX_CHARS || lines > HUMAN_WRITER_PRO.MAX_LINES) {
@@ -233,12 +285,13 @@ TEXTO: [Texto da redação REFINADO]
             }
             return { title: essayTitle, text: essayText, aiScore: aiScore };
         } catch (error) {
-            showNotification(`Erro: ${error.message}`, 'error', 5000);
-            throw error;
+             // Garante que a notificação de erro seja exibida mesmo se getAiResponse já tiver mostrado uma
+            showNotification(`Erro final: ${error.message}`, 'error', 5000);
+            throw error; // Propaga o erro para o catch principal
         }
     }
 
-    async function actionGenerateEssay() {
+     async function actionGenerateEssay() {
         const hckButton = document.getElementById('hck-btn-generate');
         if (hckButton) hckButton.disabled = true;
         try {
@@ -247,7 +300,7 @@ TEXTO: [Texto da redação REFINADO]
             const urlPathRelevant = window.location.pathname.toLowerCase().includes('/atividade/');
 
             if (!isEditorPresent || !(pageTitleElement || urlPathRelevant)) {
-                 showNotification('Página não parece ser de redação (v3).', 'error', 4000);
+                 showNotification('Página não parece ser de redação.', 'error', 4000);
                  if (hckButton) hckButton.disabled = false;
                  return;
              }
@@ -276,8 +329,9 @@ TEXTO: [Texto da redação REFINADO]
             essayInfo.coletanea = essayInfo.coletanea.replace(/\s+/g, ' ').trim();
             essayInfo.criteriosAvaliacao = essayInfo.criteriosAvaliacao.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
+            // Verifica se coletou dados essenciais
             if (!essayInfo.enunciado && !essayInfo.coletanea) {
-                showNotification('Enunciado/Coletânea não encontrados.', 'error', 4000);
+                showNotification('Dados essenciais (enunciado/coletânea) não encontrados.', 'error', 4000);
                 if (hckButton) hckButton.disabled = false;
                 return;
             }
@@ -322,6 +376,11 @@ TEXTO: [Texto da redação REFINADO]
                      if (hckButton) hckButton.disabled = false;
                      return;
                  }
+                 // Remove notificação de progresso antes da final
+                 const progressNotification = document.querySelector('.hck-notification-ios');
+                 if (progressNotification && !progressNotification.timer) { // Se for persistente
+                     progressNotification.remove();
+                 }
                  showNotification(`Concluído! (IA: ${aiScore}%)`, 'success', 0);
              } else {
                  showNotification('Campo de texto da redação não encontrado.', 'error', 4000);
@@ -330,11 +389,13 @@ TEXTO: [Texto da redação REFINADO]
              }
 
         } catch (error) {
-            showNotification(`Erro fatal: ${error.message}`, 'error', 5000);
+            // Erro já notificado em generateAndAdaptEssay, apenas garante reativar botão
+            console.error('[actionGenerateEssay] Erro:', error);
         } finally {
             if (hckButton) hckButton.disabled = false;
         }
     }
+
 
     async function actionClearAll() {
         showNotification('Limpando campos...', 'info', 1500);
@@ -436,6 +497,7 @@ TEXTO: [Texto da redação REFINADO]
     loadUI();
 
 })().catch(error => {
-    console.error('[HCK Redação] Erro geral no bookmarklet:', error);
-    alert('Erro ao executar o HCK Redação: ' + error.message);
+    console.error('[HCK Redação] Erro:', error);
+    // Tenta mostrar notificação mesmo em erro geral
+    try { showNotification(`Erro: ${error.message}`, 'error', 5000); } catch(e){}
 });
